@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Data.Sqlite;
 
-namespace GayDetectorBot
+namespace GayDetectorBot.Data
 {
     public class DataContext
     {

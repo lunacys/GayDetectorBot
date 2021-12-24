@@ -6,6 +6,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using GayDetectorBot.Data;
+using GayDetectorBot.Data.Repos;
+using GayDetectorBot.MessageHandlers;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 
@@ -25,7 +28,12 @@ namespace GayDetectorBot
         private AppConfig _appConfig;
         private MessageHandler _messageHandler;
         private DataContext _dataContext;
-        private UserRepository _userRepository;
+
+
+        private CommandRepository _commandRepository;
+        private GayRepository _gayRepository;
+        private GuildRepository _guildRepository;
+        private ParticipantRepository _participantRepository;
 
         private async Task MainAsync()
         {
@@ -41,11 +49,14 @@ namespace GayDetectorBot
 
             _dataContext.Initialize(false);
 
-            _userRepository = new UserRepository(_dataContext);
+            _commandRepository = new CommandRepository(_dataContext);
+            _gayRepository = new GayRepository(_dataContext);
+            _guildRepository = new GuildRepository(_dataContext);
+            _participantRepository = new ParticipantRepository(_dataContext);
 
             //_userRepository.Initialize();
 
-            _messageHandler = new MessageHandler(_userRepository);
+            _messageHandler = new MessageHandler(_commandRepository, _gayRepository, _guildRepository, _participantRepository);
 
             _client.Log += Log;
 

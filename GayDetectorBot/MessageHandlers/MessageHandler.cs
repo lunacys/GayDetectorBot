@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using GayDetectorBot.Models;
+using GayDetectorBot.Data.Repos;
 
-namespace GayDetectorBot
+namespace GayDetectorBot.MessageHandlers
 {
     class PrefixContent
     {
@@ -16,20 +16,31 @@ namespace GayDetectorBot
 
     public class MessageHandler
     {
-        private readonly UserRepository _userRepository;
+        private readonly CommandRepository _commandRepository;
+        private readonly GayRepository _gayRepository;
+        private readonly GuildRepository _guildRepository;
+        private readonly ParticipantRepository _participantRepository;
 
         private Dictionary<ulong, List<PrefixContent>> _customCommandMap;
 
-        public MessageHandler(UserRepository userRepository)
+        public MessageHandler(
+            CommandRepository commandRepository, 
+            GayRepository gayRepository,
+            GuildRepository guildRepository, 
+            ParticipantRepository participantRepository
+            )
         {
-            _userRepository = userRepository;
+            _commandRepository = commandRepository;
+            _gayRepository = gayRepository;
+            _guildRepository = guildRepository;
+            _participantRepository = participantRepository;
         }
 
         private async Task InitializeCustomCommands()
         {
             _customCommandMap = new Dictionary<ulong, List<PrefixContent>>();
 
-            var cmds = (await _userRepository.RetrieveAllCommands()).ToList();
+            var cmds = (await _commandRepository.RetrieveAllCommands()).ToList();
 
             foreach (var cmd in cmds)
             {
@@ -167,7 +178,7 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            if (await _userRepository.IsStartedForUser(userId, g.Id))
+            if (await _participantRepository.IsStartedForUser(userId, g.Id))
             {
                 await message.Channel.SendMessageAsync($"Этот парень итак в деле");
             }
@@ -181,7 +192,7 @@ namespace GayDetectorBot
                     return;
                 }
 
-                await _userRepository.AddUser(user, g.Id);
+                await _participantRepository.AddUser(user, g.Id);
 
                 await message.Channel.SendMessageAsync($"Поздравляю, ты в деле, {user.Mention}!");
             }
@@ -192,14 +203,14 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            var lastCheck = await _userRepository.GuildLastChecked(g.Id);
+            var lastCheck = await _guildRepository.GuildLastChecked(g.Id);
 
             var today = DateTimeOffset.Now;
 
             if (lastCheck.HasValue && lastCheck.Value.Day == today.Day && lastCheck.Value.Month == today.Month &&
                 lastCheck.Value.Year == today.Year)
             {
-                var gayToday = await _userRepository.GetLastGay(g.Id);
+                var gayToday = await _guildRepository.GetLastGay(g.Id);
 
                 if (gayToday.HasValue)
                 {
@@ -219,7 +230,7 @@ namespace GayDetectorBot
 
             await message.Channel.SendMessageAsync("Выполняю поиск пидора...");
 
-            var pList = (await _userRepository.RetrieveParticipants(g.Id)).Where(p => !p.IsRemoved).ToList();
+            var pList = (await _participantRepository.RetrieveParticipants(g.Id)).Where(p => !p.IsRemoved).ToList();
             
             var rand = new Random();
             var i = rand.Next(pList.Count);
@@ -227,11 +238,11 @@ namespace GayDetectorBot
             var p = pList[i];
 
             if (!lastCheck.HasValue)
-                await _userRepository.GuildAdd(g.Id, DateTimeOffset.Now, p.UserId);
+                await _guildRepository.GuildAdd(g.Id, DateTimeOffset.Now, p.UserId);
             else
-                await _userRepository.GuildUpdate(g.Id, p.UserId);
+                await _guildRepository.GuildUpdate(g.Id, p.UserId);
                                         
-            await _userRepository.AddGay(p);
+            await _gayRepository.AddGay(p);
 
             await Task.Delay(1000);
             await message.Channel.SendMessageAsync("Пидор обнаружен");
@@ -248,7 +259,7 @@ namespace GayDetectorBot
             var g = ch?.Guild;
             var userId = message.Author.Id;
 
-            if (await _userRepository.IsStartedForUser(userId, g.Id))
+            if (await _participantRepository.IsStartedForUser(userId, g.Id))
             {
                 await message.Channel.SendMessageAsync($"Ты итак в деле");
             }
@@ -256,7 +267,7 @@ namespace GayDetectorBot
             {
                 var user = await message.Channel.GetUserAsync(userId);
 
-                await _userRepository.AddUser(user, g.Id);
+                await _participantRepository.AddUser(user, g.Id);
 
                 await message.Channel.SendMessageAsync($"Поздравляю, ты в деле, {user.Mention}!");
             }
@@ -267,7 +278,7 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            var gays = (await _userRepository.RetrieveGays(g.Id)).ToList();
+            var gays = (await _gayRepository.RetrieveGays(g.Id)).ToList();
 
             if (gays.Count == 0)
             {
@@ -324,7 +335,7 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            await _userRepository.RemoveUser(g.Id, userId);
+            await _participantRepository.RemoveUser(g.Id, userId);
 
             await message.Channel.SendMessageAsync($"Ну ты и пидор, {message.Author.Mention}. Убрал тебя.");
         }
@@ -372,13 +383,13 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            if (await _userRepository.CommandExists(prefix, g.Id))
+            if (await _commandRepository.CommandExists(prefix, g.Id))
             {
                 await message.Channel.SendMessageAsync($"Команда `{prefix}` уже существует!");
             }
             else
             {
-                await _userRepository.AddCommand(g.Id, message.Author.Id, prefix, content);
+                await _commandRepository.AddCommand(g.Id, message.Author.Id, prefix, content);
 
                 if (!_customCommandMap.ContainsKey(g.Id))
                 {
@@ -410,13 +421,13 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            if (!await _userRepository.CommandExists(prefix, g.Id))
+            if (!await _commandRepository.CommandExists(prefix, g.Id))
             {
                 await message.Channel.SendMessageAsync($"Команды `{prefix}` не существует");
                 return;
             }
 
-            await _userRepository.DeleteCommand(prefix, g.Id);
+            await _commandRepository.DeleteCommand(prefix, g.Id);
             _customCommandMap[g.Id]?.RemoveAll(pc => pc.Prefix == prefix);
 
             await message.Channel.SendMessageAsync($"Команда `{prefix}` успешно удалена");
@@ -427,7 +438,7 @@ namespace GayDetectorBot
             var ch = message.Channel as SocketGuildChannel;
             var g = ch?.Guild;
 
-            var pList = await _userRepository.RetrieveParticipants(g.Id);
+            var pList = await _participantRepository.RetrieveParticipants(g.Id);
 
             string listStr = "";
 
