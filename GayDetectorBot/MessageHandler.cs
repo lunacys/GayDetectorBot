@@ -96,53 +96,34 @@ namespace GayDetectorBot
             {
                 await Participants(message);
             }
-            else if (lower == "!special-operations")
+            else if (lower == "!рандом")
             {
-                await message.Channel.SendMessageAsync(
-@"
-FOX-HOUND
-🔫🔁
-🔫🔃🔀🔁
-🔫🔁🔃🔀
-🔫↪
-🔫🔁🔀🔃
-🔫↪🔁
-🔫🔃🔃🔀🔄
- Revolver
- 🔫↪🔄🔁
-🔫🔃🔀
-🔫↪🔀🔀🔄🔀
- Ocelot
- 🔫🔃🔄🔁↪🔃
-🔫🔁↪↪
-🔫🔁🔁↪
- I've been waiting for you, Solid Snake 
-🔫🔃🔃🔃
-🔫🔁↪🔃🔄
-🔫🔀🔁↪🔃🔃
- Now we'll see if the man can live up to the legend 
-🔫🔀🔁🔀 
-This is the greatest handgun ever made
-🔫↘✋✊
-The Single Action Army.
-🔫⬆🔃🔃🔃🔃
-Six bullets 
-🔫⬆▫⬇▫⬇▫⬇▫⬇▫⬇▫⬇ 
-More than enough to kill anything that moves
- 🔫⬅▫⬅▫⬅▫⬅▫⬅▫⬅▫ 
-🔫⬆🔃🔃🔃⬇🔃🔃🔃" +
-                    "\nNow i'll show you why they call me \"ᏒᏋᏉᎧᏝᏉᏋᏒ\""
-                );
+                var map = _customCommandMap[g.Id];
+                var rnd = new Random();
+                var i = rnd.Next(map.Count);
+
+                var msg = map[i].Content;
+                await message.Channel.SendMessageAsync(msg);
             }
-            else if (lower == "!поминутно")
+            else if (lower == "!команды")
             {
-                await message.Channel.SendMessageAsync(
-                    "Я распишу нахуй, поминутно блять, где кто соснул хуйца, блять. Кто сломал вещи, блять, купил амулет, афк встал, свинья ебаная. Через 2 недели блять ты умрешь от беспрерывного поноса блять. Я щас опять добавлю громкости блять, мразь ебаная блять, чтоб ты меня слышала сучка нахуй, поняла блять?");
+                var map = _customCommandMap[g.Id];
+
+                var msg = "```";
+
+                foreach (var pc in map)
+                {
+                    msg += $"{pc.Prefix}\n";
+                }
+
+                msg += "```";
+
+                await message.Channel.SendMessageAsync(msg);
             }
 
             if (_customCommandMap.ContainsKey(g.Id))
             {
-                var content = _customCommandMap[g.Id].FirstOrDefault(pc => pc.Prefix == message.Content);
+                var content = _customCommandMap[g.Id].FirstOrDefault(pc => pc.Prefix.ToLower() == message.Content.ToLower());
                 if (content != null)
                     await message.Channel.SendMessageAsync(content.Content);
             }
@@ -298,7 +279,7 @@ More than enough to kill anything that moves
 
                 var data = gays.GroupBy(gay => gay.Participant.UserId).Select(gr => gr.Key).ToList();
 
-                var map = new Dictionary<string, (int, bool)>();
+                var map = new Dictionary<string, (int, bool, ulong)>();
 
                 foreach (var userId in data)
                 {
@@ -307,7 +288,7 @@ More than enough to kill anything that moves
 
                     var count = gays.Count(gay => gay.Participant.UserId == userId);
 
-                    map[u2] = (count, gays.Find(gay => gay.Participant.UserId == userId)?.Participant?.IsRemoved ?? false);
+                    map[u2] = (count, gays.Find(gay => gay.Participant.UserId == userId)?.Participant?.IsRemoved ?? false, userId);
                 }
 
                 var mapSorted = map.ToList();
@@ -323,6 +304,8 @@ More than enough to kill anything that moves
 
                 for (int i = 0; i < mapSorted.Count; i++)
                 {
+                    //var lastTime
+
                     msg += $" > {i + 1}) {mapSorted[i].Key} - {mapSorted[i].Value.Item1}";
 
                     if (mapSorted[i].Value.Item2)
@@ -355,7 +338,10 @@ More than enough to kill anything that moves
                                       "`!помоги` - увидеть это сообщение ещё раз\n" +
                                       "`!уберименя` - убрать из списка рулетки - команда только для настоящих пидоров\n" +
                                       "`!добавить-команду !<название-команды> <текстовое содержание>` - добавить кастомную команду\n" +
-                                      "`!удалить-команду !<название-команды>` - удалить кастомную команду");
+                                      "`!удалить-команду !<название-команды>` - удалить кастомную команду\n" +
+                                      "`!рандом` - выполнить случайную команду из списка всех команд\n" +
+                                      "`!команды` - список всех пользовательских команд\n" +
+                                      "`!участники` - список всех участников");
         }
 
         private async Task AddCommand(SocketMessage message)

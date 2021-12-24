@@ -54,7 +54,7 @@ namespace GayDetectorBot
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
-            await _client.SetActivityAsync(new Game("with gays"));
+            await _client.SetActivityAsync(new Game("!помоги"));
 
             _client.MessageReceived += async message =>
             {
