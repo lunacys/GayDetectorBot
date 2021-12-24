@@ -194,6 +194,12 @@ More than enough to kill anything that moves
             {
                 var user = await message.Channel.GetUserAsync(userId);
 
+                if (user == null)
+                {
+                    await message.Channel.SendMessageAsync($"Не могу найти такого парня");
+                    return;
+                }
+
                 await _userRepository.AddUser(user, g.Id);
 
                 await message.Channel.SendMessageAsync($"Поздравляю, ты в деле, {user.Mention}!");
@@ -207,7 +213,7 @@ More than enough to kill anything that moves
 
             var lastCheck = await _userRepository.GuildLastChecked(g.Id);
 
-            var today = DateTime.Today;
+            var today = DateTimeOffset.Now;
 
             if (lastCheck.HasValue && lastCheck.Value.Day == today.Day && lastCheck.Value.Month == today.Month &&
                 lastCheck.Value.Year == today.Year)
@@ -217,8 +223,11 @@ More than enough to kill anything that moves
                 if (gayToday.HasValue)
                 {
                     var gayUser = await message.Channel.GetUserAsync(gayToday.Value);
+
+                    var nextDate = today.Date.AddDays(1);
+
                     await message.Channel.SendMessageAsync($"Сегодня пидор {gayUser.Mention}\n" +
-                                                           $"Следующее обновление через {today}");
+                                                           $"Следующее обновление через {(nextDate - today)}");
                     return;
                 }
                 else
@@ -285,7 +294,7 @@ More than enough to kill anything that moves
             }
             else
             {
-                var msg = $"**Топ пидоров за всё время:**";
+                var msg = $"**Топ пидоров за всё время:**\n";
 
                 var data = gays.GroupBy(gay => gay.Participant.UserId).Select(gr => gr.Key).ToList();
 
@@ -314,7 +323,7 @@ More than enough to kill anything that moves
 
                 for (int i = 0; i < mapSorted.Count; i++)
                 {
-                    msg += $" > {i + 1}) {mapSorted[i].Key} - {mapSorted[i].Value}";
+                    msg += $" > {i + 1}) {mapSorted[i].Key} - {mapSorted[i].Value.Item1}";
 
                     if (mapSorted[i].Value.Item2)
                         msg += " - решил уйти от обязательств";

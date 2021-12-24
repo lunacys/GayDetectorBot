@@ -128,7 +128,7 @@ namespace GayDetectorBot
         }
 
 
-        public async Task<DateTime?> GuildLastChecked(ulong guildId)
+        public async Task<DateTimeOffset?> GuildLastChecked(ulong guildId)
         {
             await using var conn = _context.CreateConnection();
             await conn.OpenAsync();
@@ -137,7 +137,7 @@ namespace GayDetectorBot
             cmd.CommandText = SqlReader.Load("Guild$GetLastChecked");
             cmd.Parameters.AddWithValue("$GuildId", guildId);
 
-            DateTime? lastChecked = null;
+            DateTimeOffset? lastChecked = null;
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -145,7 +145,7 @@ namespace GayDetectorBot
                 {
                     var i = reader.GetInt64(0);
 
-                    lastChecked = DateTimeOffset.FromUnixTimeSeconds(i).Date;
+                    lastChecked = DateTimeOffset.FromUnixTimeSeconds(i).ToLocalTime();
                 }
             }
 
@@ -189,10 +189,17 @@ namespace GayDetectorBot
             await conn.OpenAsync();
 
             var cmd = conn.CreateCommand();
-            cmd.CommandText = SqlReader.Load("Guild$GetLastChecked");
+            cmd.CommandText = SqlReader.Load("Guild$Update");
             cmd.Parameters.AddWithValue("$GuildId", guildId);
             cmd.Parameters.AddWithValue("$LastChecked", DateTimeOffset.Now.ToUnixTimeSeconds());
             cmd.Parameters.AddWithValue("$LastGay", userId);
+
+
+            /*
+             * 	LastChecked = $LastChecked,
+	LastGayUserId = $LastGay
+WHERE GuildId = $GuildId
+             */
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
