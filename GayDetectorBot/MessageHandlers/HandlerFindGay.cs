@@ -43,8 +43,10 @@ namespace GayDetectorBot.MessageHandlers
 
                     var nextDate = today.Date.AddDays(1);
 
+                    var delta = nextDate - today;
+
                     await message.Channel.SendMessageAsync($"Сегодня пидор {gayUser.Mention}\n" +
-                                                           $"Следующее обновление через {(nextDate - today)}");
+                                                           $"Следующее обновление через {delta.Hours} часов {delta.Minutes} минут");
                     return;
                 }
                 else
