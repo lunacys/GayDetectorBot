@@ -66,11 +66,14 @@ namespace GayDetectorBot.MessageHandlers
                 await InitializeCustomCommands();
             }
 
+            if (string.IsNullOrEmpty(message.Content))
+                return;
+
             var lower = message.Content.ToLower().TrimEnd();
 
             foreach (var handler in _messageHandlers)
             {
-                if (handler.HasParameters && handler.CommandString.StartsWith(lower))
+                if (handler.HasParameters && lower.StartsWith(handler.CommandString))
                     await handler.HandleAsync(message);
                 else if (handler.CommandString == lower)
                     await handler.HandleAsync(message);
