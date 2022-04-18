@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GayDetectorBot.Telegram": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
