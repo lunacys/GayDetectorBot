@@ -8,7 +8,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
     [MessageHandler("добавить-команду", "добавить кастомную команду", 2)]
     public class HandlerAddCommand : IMessageHandler
     {
-        public string CommandString => "добавить-команду";
+        public string CommandString => "!добавить-команду ";
         public bool HasParameters => true;
 
         public MemberStatusPermission Permissions =>

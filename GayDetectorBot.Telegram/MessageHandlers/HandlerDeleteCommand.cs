@@ -7,7 +7,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
     [MessageHandler("удалить-команду", "удалить кастомную команду", 1)]
     public class HandlerDeleteCommand : IMessageHandler
     {
-        public string CommandString => "удалить-команду";
+        public string CommandString => "!удалить-команду";
 
         public bool HasParameters => true;
 

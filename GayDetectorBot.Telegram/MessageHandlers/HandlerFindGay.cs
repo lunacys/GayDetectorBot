@@ -4,10 +4,10 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("ктопидор", "", MemberStatusPermission.All)]
+    [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
     public class HandlerFindGay : IMessageHandler
     {
-        public string CommandString => "ктопидор";
+        public string CommandString => "!ктопидор";
 
         public MemberStatusPermission Permissions =>
             MemberStatusPermission.Administrator | MemberStatusPermission.Creator;

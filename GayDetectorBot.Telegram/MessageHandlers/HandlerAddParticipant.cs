@@ -5,10 +5,10 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("добавить", "", 1)]
+    [MessageHandler("добавить", "добавить пользователя в список рулетки с ссылкой на него", 1)]
     public class HandlerAddParticipant : IMessageHandler
     {
-        public string CommandString => "добавить";
+        public string CommandString => "!добавить ";
 
         public bool HasParameters => true;
 

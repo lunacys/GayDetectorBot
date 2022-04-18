@@ -7,7 +7,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
     [MessageHandler("команды", "список всех пользовательских команд", MemberStatusPermission.All)]
     public class HandlerCommandList : IMessageHandler
     {
-        public string CommandString => "команды";
+        public string CommandString => "!команды";
 
         public MemberStatusPermission Permissions =>
             MemberStatusPermission.Administrator | MemberStatusPermission.Creator;

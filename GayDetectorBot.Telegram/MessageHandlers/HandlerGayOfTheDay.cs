@@ -7,7 +7,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
     [MessageHandler("пидордня", "стать участником рулетки", MemberStatusPermission.All)]
     public class HandlerGayOfTheDay : IMessageHandler
     {
-        public string CommandString => "пидордня";
+        public string CommandString => "!пидордня";
         public MemberStatusPermission Permissions =>
             MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
 

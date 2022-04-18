@@ -10,7 +10,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers;
 [MessageHandler("eval", "выполнить скрипт на JavaScript", 1)]
 public class HandlerEval : IMessageHandler
 {
-    public string CommandString => "eval";
+    public string CommandString => "!eval ";
     public bool HasParameters => true;
     public MemberStatusPermission Permissions =>
         MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
