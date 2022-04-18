@@ -5,7 +5,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("топпидоров", "", MemberStatusPermission.All)]
+    [MessageHandler("топпидоров", "узнать топ пидоров за всё время", MemberStatusPermission.All)]
     public class HandlerGayTop : IMessageHandler
     {
         public string CommandString => "!топпидоров";

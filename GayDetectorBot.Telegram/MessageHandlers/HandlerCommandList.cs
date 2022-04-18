@@ -4,7 +4,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("команды", "", MemberStatusPermission.All)]
+    [MessageHandler("команды", "список всех пользовательских команд", MemberStatusPermission.All)]
     public class HandlerCommandList : IMessageHandler
     {
         public string CommandString => "команды";

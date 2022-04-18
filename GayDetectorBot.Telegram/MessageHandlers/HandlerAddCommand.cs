@@ -5,7 +5,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("добавить-команду", "", 2)]
+    [MessageHandler("добавить-команду", "добавить кастомную команду", 2)]
     public class HandlerAddCommand : IMessageHandler
     {
         public string CommandString => "добавить-команду";

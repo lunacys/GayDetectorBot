@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("уберименя", "", MemberStatusPermission.All)]
+    [MessageHandler("уберименя", "убрать из списка рулетки - команда только для настоящих пидоров", MemberStatusPermission.All)]
     public class HandlerRemoveMe : IMessageHandler
     {
         public string CommandString => "!уберименя";

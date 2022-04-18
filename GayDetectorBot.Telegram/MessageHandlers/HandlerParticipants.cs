@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.Telegram.MessageHandlers
 {
-    [MessageHandler("участники", "", MemberStatusPermission.All)]
+    [MessageHandler("участники", "список всех участников", MemberStatusPermission.All)]
     public class HandlerParticipants : IMessageHandler
     {
         public string CommandString => "!участники";
