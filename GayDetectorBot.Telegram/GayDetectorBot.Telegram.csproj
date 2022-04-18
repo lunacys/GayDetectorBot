@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\jint\Jint\Jint.csproj" />
+    <ProjectReference Include="..\3rdParty\jint\Jint\Jint.csproj" />
   </ItemGroup>
 
   <ItemGroup>

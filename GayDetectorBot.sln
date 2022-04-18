@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GayDetectorBot.Telegram", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{B6247BA7-D2FA-4C88-A72A-D4A116BA33F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jint", "..\jint\Jint\Jint.csproj", "{248FC0E5-1D31-43A0-90BA-BBFCAE823C42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jint", "3rdParty\jint\Jint\Jint.csproj", "{020CD880-8034-4A3D-A298-3DCCCA1B8922}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,16 +19,16 @@ Global
 		{01FACCA3-593D-497B-AAB2-B937319B704E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01FACCA3-593D-497B-AAB2-B937319B704E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01FACCA3-593D-497B-AAB2-B937319B704E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{248FC0E5-1D31-43A0-90BA-BBFCAE823C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{248FC0E5-1D31-43A0-90BA-BBFCAE823C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{248FC0E5-1D31-43A0-90BA-BBFCAE823C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{248FC0E5-1D31-43A0-90BA-BBFCAE823C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020CD880-8034-4A3D-A298-3DCCCA1B8922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020CD880-8034-4A3D-A298-3DCCCA1B8922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020CD880-8034-4A3D-A298-3DCCCA1B8922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020CD880-8034-4A3D-A298-3DCCCA1B8922}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{248FC0E5-1D31-43A0-90BA-BBFCAE823C42} = {B6247BA7-D2FA-4C88-A72A-D4A116BA33F1}
+		{020CD880-8034-4A3D-A298-3DCCCA1B8922} = {B6247BA7-D2FA-4C88-A72A-D4A116BA33F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A3E5E85A-D0D2-4AFB-9612-2035BB6D0BE0}
