@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
     public class HandlerFindGay : IMessageHandler

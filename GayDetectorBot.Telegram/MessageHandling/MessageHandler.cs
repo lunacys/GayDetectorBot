@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using GayDetectorBot.Telegram.Data.Repos;
+using GayDetectorBot.Telegram.MessageHandling.Handlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling
 {
     public class MessageHandler
     {

@@ -1,4 +1,4 @@
-﻿namespace GayDetectorBot.Telegram.MessageHandlers;
+﻿namespace GayDetectorBot.Telegram.MessageHandling;
 
 [Flags]
 public enum MemberStatusPermission

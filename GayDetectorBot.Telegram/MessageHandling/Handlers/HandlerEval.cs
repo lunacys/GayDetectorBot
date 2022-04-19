@@ -1,11 +1,10 @@
-﻿using Esprima;
-using Jint;
+﻿using Jint;
 using Jint.Runtime;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.Telegram.MessageHandlers;
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers;
 
 [MessageHandler("eval", "выполнить скрипт на JavaScript", 1)]
 public class HandlerEval : IMessageHandler

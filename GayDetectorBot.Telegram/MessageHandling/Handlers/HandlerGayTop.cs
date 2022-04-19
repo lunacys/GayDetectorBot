@@ -3,7 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("топпидоров", "узнать топ пидоров за всё время", MemberStatusPermission.All)]
     public class HandlerGayTop : IMessageHandler

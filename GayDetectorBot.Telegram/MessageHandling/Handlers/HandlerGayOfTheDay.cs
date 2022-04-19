@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("пидордня", "стать участником рулетки", MemberStatusPermission.All)]
     public class HandlerGayOfTheDay : IMessageHandler

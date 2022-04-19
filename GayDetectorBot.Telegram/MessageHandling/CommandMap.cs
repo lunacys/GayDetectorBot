@@ -1,6 +1,6 @@
 ﻿using GayDetectorBot.Telegram.Data.Repos;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling
 {
     public class PrefixContent
     {

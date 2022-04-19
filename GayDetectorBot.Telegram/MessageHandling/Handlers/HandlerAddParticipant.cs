@@ -3,7 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("добавить", "добавить пользователя в список рулетки с ссылкой на него", 1)]
     public class HandlerAddParticipant : IMessageHandler

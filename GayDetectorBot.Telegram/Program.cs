@@ -1,6 +1,6 @@
 ﻿using GayDetectorBot.Telegram.Data;
 using GayDetectorBot.Telegram.Data.Repos;
-using GayDetectorBot.Telegram.MessageHandlers;
+using GayDetectorBot.Telegram.MessageHandling;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;

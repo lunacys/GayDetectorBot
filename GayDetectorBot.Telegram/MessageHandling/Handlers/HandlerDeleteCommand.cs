@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("удалить-команду", "удалить кастомную команду", 1)]
     public class HandlerDeleteCommand : IMessageHandler

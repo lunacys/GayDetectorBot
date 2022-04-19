@@ -1,4 +1,4 @@
-﻿namespace GayDetectorBot.Telegram.MessageHandlers;
+﻿namespace GayDetectorBot.Telegram.MessageHandling;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class MessageHandlerAttribute : Attribute

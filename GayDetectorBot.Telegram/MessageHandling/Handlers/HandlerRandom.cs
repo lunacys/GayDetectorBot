@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.Telegram.MessageHandlers
+namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("рандом", "выполнить случайную команду из списка всех команд", MemberStatusPermission.All)]
     public class HandlerRandom : IMessageHandler
