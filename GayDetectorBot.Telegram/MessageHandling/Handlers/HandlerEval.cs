@@ -16,13 +16,13 @@ public class HandlerEval : IMessageHandler
 
     public async Task HandleAsync(Message message, ITelegramBotClient client)
     {
-        var data = message.Text.Split(" ");
+        var data = message.Text?.Split(" ");
         var chatId = message.Chat.Id;
 
         //if (jsConsole.LogAction == null)
         //    jsConsole.LogAction = (o) => client.SendTextMessageAsync(chatId, "LOG: " + o);
 
-        if (data.Length < 2)
+        if (data == null || data.Length < 2)
         {
             await client.SendTextMessageAsync(chatId, "Нет скрипта");
             return;
@@ -69,7 +69,7 @@ public class HandlerEval : IMessageHandler
 
     class JsConsole
     {
-        public Action<object> LogAction { get; set; }
+        public Action<object>? LogAction { get; set; }
 
         public void log(params object[] objects)
         {

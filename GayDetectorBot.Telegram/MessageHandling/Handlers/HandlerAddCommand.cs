@@ -24,11 +24,12 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
         public async Task HandleAsync(Message message, ITelegramBotClient client)
         {
-            var data = message.Text.Split(' ');
+            var data = message.Text?.Split(' ');
 
             var chatId = message.Chat.Id;
 
-            if (data.Length < 3)
+
+            if (data == null || data.Length < 3)
             {
                 await client.SendTextMessageAsync(chatId, "Мало данных! Надо два параметра!");
                 return;
@@ -62,7 +63,10 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             }
             else
             {
-                await _commandRepository.AddCommand(chatId, message.From.Username, prefix, content);
+                if (message.From != null && message.From.Username != null)
+                    await _commandRepository.AddCommand(chatId, message.From.Username, prefix, content);
+                else
+                    await client.SendTextMessageAsync(chatId, $"Неизвестный пользователь");
 
                 if (!_commandMap.ContainsKey(chatId))
                 {

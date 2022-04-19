@@ -24,17 +24,23 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
         public async Task HandleAsync(Message message, ITelegramBotClient client)
         {
-            var data = message.Text.Split(" ");
+            var data = message.Text?.Split(" ");
 
             var chatId = message.Chat.Id;
 
-            if (data.Length < 2)
+            if (data == null || data.Length < 2)
             {
                 await client.SendTextMessageAsync(chatId, "Укажи пользователя, дурачок");
                 return;
             }
 
             var from = message.From;
+            if (from == null)
+            {
+                await client.SendTextMessageAsync(chatId, "Неизвестный пользователь");
+                return;
+            }
+
             var chatMember = await client.GetChatMemberAsync(chatId, from.Id);
 
             if (chatMember.Status != ChatMemberStatus.Administrator && chatMember.Status != ChatMemberStatus.Creator)

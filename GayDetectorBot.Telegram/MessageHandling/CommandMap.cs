@@ -4,13 +4,13 @@ namespace GayDetectorBot.Telegram.MessageHandling
 {
     public class PrefixContent
     {
-        public string Prefix { get; set; }
-        public string Content { get; set; }
+        public string Prefix { get; init; } = null!;
+        public string Content { get; init; } = null!;
     }
 
     public class CommandMap
     {
-        private Dictionary<long, List<PrefixContent>> _customCommandMap;
+        private readonly Dictionary<long, List<PrefixContent>> _customCommandMap;
 
         private readonly CommandRepository _commandRepository;
 
@@ -23,12 +23,11 @@ namespace GayDetectorBot.Telegram.MessageHandling
         public CommandMap(CommandRepository commandRepo)
         {
             _commandRepository = commandRepo;
+            _customCommandMap = new Dictionary<long, List<PrefixContent>>();
         }
 
         public async Task Initialize()
         {
-            _customCommandMap = new Dictionary<long, List<PrefixContent>>();
-
             var cmds = (await _commandRepository.RetrieveAllCommands()).ToList();
 
             foreach (var cmd in cmds)

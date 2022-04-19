@@ -26,7 +26,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             await _participantRepository.RemoveUser(message.Chat.Id, username);
 
-            await client.SendTextMessageAsync(message.Chat.Id, $"Ну ты и пидор, @{message.From.Username}. Убрал тебя.");
+            if (message.From == null)
+            {
+                await client.SendTextMessageAsync(message.Chat.Id, $"Неизвестный пользователь");
+                return;
+            }
+            
+            await client.SendTextMessageAsync(message.Chat.Id,
+                    $"Ну ты и пидор, @{message.From.Username}. Убрал тебя.");
         }
     }
 }

@@ -12,22 +12,22 @@ namespace GayDetectorBot.Telegram
 {
     public class AppConfig
     {
-        public string Token { get; set; }
-        public string DbConnectionString { get; set; }
+        public string Token { get; set; } = null!;
+        public string DbConnectionString { get; set; } = null!;
     }
 
     class Program
     {
         public static async Task Main(string[] args) => await new Program().Initialize();
 
-        private AppConfig _appConfig;
-        private TelegramBotClient _telegramClient;
-        private MessageHandler _messageHandler;
-        private DataContext _dataContext;
-        private CommandRepository _commandRepository;
-        private GayRepository _gayRepository;
-        private ChatRepository _chatRepository;
-        private ParticipantRepository _participantRepository;
+        private AppConfig? _appConfig;
+        private TelegramBotClient _telegramClient = null!;
+        private MessageHandler _messageHandler = null!;
+        private DataContext _dataContext = null!;
+        private CommandRepository _commandRepository = null!;
+        private GayRepository _gayRepository = null!;
+        private ChatRepository _chatRepository = null!;
+        private ParticipantRepository _participantRepository = null!;
 
         private async Task Initialize()
         {
@@ -42,7 +42,7 @@ namespace GayDetectorBot.Telegram
 
             _dataContext = new DataContext(_appConfig.DbConnectionString, "TgData.db");
 
-            _dataContext.Initialize(false);
+            _dataContext.Initialize();
 
             _commandRepository = new CommandRepository(_dataContext);
             _gayRepository = new GayRepository(_dataContext);
@@ -58,9 +58,10 @@ namespace GayDetectorBot.Telegram
 
         private async Task InitTelegram()
         {
-            _telegramClient = new TelegramBotClient(_appConfig.Token);
+            if (_appConfig == null)
+                return;
 
-            //await client2.SendTextMessageAsync(chatId, "гоша лох");
+            _telegramClient = new TelegramBotClient(_appConfig.Token);
 
             var receiverOptions = new ReceiverOptions
             {
@@ -70,7 +71,7 @@ namespace GayDetectorBot.Telegram
             _telegramClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions);
 
             var me = await _telegramClient.GetMeAsync();
-            Console.WriteLine($"TELEGRAM: {me.Id} {me.FirstName}");
+            Console.WriteLine($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
         }
 
         private Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken token)
