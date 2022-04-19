@@ -13,24 +13,27 @@ namespace GayDetectorBot.Telegram.MessageHandlers
         private readonly ParticipantRepository _participantRepository;
 
         private List<IMessageHandler> _messageHandlers;
-
+        
         private CommandMap? _commandMap;
+
+        private readonly List<string> _reservedCommands;
 
         public MessageHandler(
             CommandRepository commandRepository, 
             GayRepository gayRepository,
             ChatRepository chatRepository, 
-            ParticipantRepository participantRepository
-            )
+            ParticipantRepository participantRepository)
         {
             _commandRepository = commandRepository;
             _gayRepository = gayRepository;
             _chatRepository = chatRepository;
             _participantRepository = participantRepository;
+            _messageHandlers = new List<IMessageHandler>();
 
             var assembly = Assembly.GetExecutingAssembly();
             var types = GetTypesWithAttribute(assembly);
-            Console.WriteLine();
+
+            _reservedCommands = types.Select(tuple => "!" + tuple.attribute.CommandAlias.TrimEnd()).ToList();
         }
 
         private async Task InitializeCustomCommands()
@@ -40,7 +43,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
 
             _messageHandlers = new List<IMessageHandler>
             {
-                new HandlerAddCommand(_commandRepository, _commandMap),
+                new HandlerAddCommand(_commandRepository, _commandMap, _reservedCommands),
                 new HandlerAddParticipant(_participantRepository),
                 new HandlerCommandList(_commandMap),
                 new HandlerDeleteCommand(_commandRepository, _commandMap),
@@ -55,7 +58,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
             };
         }
 
-        public async Task Message(Message message, ITelegramBotClient client)
+        public async Task Message(Message? message, ITelegramBotClient client)
         {
             if (message == null)
                 return;
@@ -89,7 +92,7 @@ namespace GayDetectorBot.Telegram.MessageHandlers
             if (any)
                 return;
 
-            if (_commandMap.ContainsKey(message.Chat.Id))
+            if (_commandMap!.ContainsKey(message.Chat.Id))
             {
                 var content = _commandMap[message.Chat.Id].FirstOrDefault(prefixContent =>
                     prefixContent.Prefix.ToLower() == message.Text.ToLower());

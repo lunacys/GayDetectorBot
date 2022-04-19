@@ -11,16 +11,15 @@ namespace GayDetectorBot.Telegram.MessageHandlers
         public string CommandString => "!добавить-команду ";
         public bool HasParameters => true;
 
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
-
         private readonly CommandRepository _commandRepository;
         private readonly CommandMap _commandMap;
+        private readonly IEnumerable<string> _reservedCommands;
 
-        public HandlerAddCommand(CommandRepository commandRepo, CommandMap commandMap)
+        public HandlerAddCommand(CommandRepository commandRepo, CommandMap commandMap, IEnumerable<string> reservedCommands)
         {
             _commandRepository = commandRepo;
             _commandMap = commandMap;
+            _reservedCommands = reservedCommands;
         }
 
         public async Task HandleAsync(Message message, ITelegramBotClient client)
@@ -40,6 +39,12 @@ namespace GayDetectorBot.Telegram.MessageHandlers
             if (!prefix.StartsWith('!'))
             {
                 await client.SendTextMessageAsync(chatId, "Команды должны начинаться со знака `!`", ParseMode.Markdown);
+                return;
+            }
+
+            if (_reservedCommands.Contains(prefix))
+            {
+                await client.SendTextMessageAsync(chatId, "Такая команда уже занята ботом, извини", ParseMode.Markdown);
                 return;
             }
 
