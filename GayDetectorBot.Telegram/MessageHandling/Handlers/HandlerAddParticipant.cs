@@ -12,7 +12,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var data = message.Text?.Split(" ");
 
@@ -20,23 +20,20 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (data == null || data.Length < 2)
             {
-                await client.SendTextMessageAsync(chatId, "Укажи пользователя, дурачок");
-                return;
+                throw Error("Укажи пользователя, дурачок");
             }
 
             var from = message.From;
             if (from == null)
             {
-                await client.SendTextMessageAsync(chatId, "Неизвестный пользователь");
-                return;
+                throw Error("Неизвестный пользователь");
             }
 
-            var chatMember = await client.GetChatMemberAsync(chatId, from.Id);
+            var chatMember = await Client.GetChatMemberAsync(chatId, from.Id);
 
             if (chatMember.Status != ChatMemberStatus.Administrator && chatMember.Status != ChatMemberStatus.Creator)
             {
-                await client.SendTextMessageAsync(chatId, "А тебе низя такое делать!");
-                return;
+                throw Error("А тебе низя такое делать!");
             }
 
             var userRaw = data[1];
@@ -55,19 +52,19 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             }
             else
             {
-                await client.SendTextMessageAsync(chatId, "Какой-то неправильный пользователь");
+                Error("Какой-то неправильный пользователь");
                 return;
             }
 
             if (await RepositoryContainer.Participant.IsStartedForUser(username, chatId))
             {
-                await client.SendTextMessageAsync(chatId, $"Этот парень итак в деле");
+                await SendTextAsync($"Этот парень итак в деле");
             }
             else
             {
                 await RepositoryContainer.Participant.AddUser(username, chatId);
 
-                await client.SendTextMessageAsync(chatId, $"Поздравляю, ты в деле, @{username}!");
+                await SendTextAsync($"Поздравляю, ты в деле, @{username}!");
             }
         }
     }

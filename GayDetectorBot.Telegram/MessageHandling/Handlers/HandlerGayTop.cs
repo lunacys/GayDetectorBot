@@ -12,7 +12,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var chatId = message.Chat.Id;
 
@@ -20,7 +20,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (gays.Count == 0)
             {
-                await client.SendTextMessageAsync(chatId, "Это удивительно, но пидоров на этом сервере нет");
+                await SendTextAsync("Это удивительно, но пидоров на этом сервере нет");
             }
             else
             {
@@ -60,7 +60,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     msg += "\n";
                 }
 
-                await client.SendTextMessageAsync(chatId, msg, ParseMode.Markdown);
+                await SendTextAsync(msg, ParseMode.Markdown);
             }
         }
     }

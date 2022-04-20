@@ -11,7 +11,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var username = message.From?.Username;
 
@@ -22,12 +22,10 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (message.From == null)
             {
-                await client.SendTextMessageAsync(message.Chat.Id, $"Неизвестный пользователь");
-                return;
+                throw Error($"Неизвестный пользователь");
             }
             
-            await client.SendTextMessageAsync(message.Chat.Id,
-                    $"Ну ты и пидор, @{message.From.Username}. Убрал тебя.");
+            await SendTextAsync($"Ну ты и пидор, @{message.From.Username}. Убрал тебя.");
         }
     }
 }

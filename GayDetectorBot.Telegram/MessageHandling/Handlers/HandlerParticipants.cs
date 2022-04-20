@@ -11,11 +11,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var chatId = message.Chat.Id;
 
-            var pList = await RepositoryContainer.Participant.RetrieveParticipants(chatId);
+            var pList = (await RepositoryContainer.Participant.RetrieveParticipants(chatId)).ToList();
+
+            if (pList.Count == 0)
+                throw Error("Нет ни одного участника");
 
             string listStr = "";
 
@@ -24,7 +27,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 listStr += $" - @{p.Username}\n";
             }
 
-            await client.SendTextMessageAsync(chatId, "Участники:\n\n" + listStr);
+            await SendTextAsync("Участники:\n\n" + listStr);
         }
     }
 }

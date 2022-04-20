@@ -21,19 +21,19 @@ namespace GayDetectorBot.Telegram.MessageHandling
             ChatRepository chatRepository, 
             ParticipantRepository participantRepository)
         {
-            var commandRepository1 = commandRepository;
+            var cr = commandRepository;
 
             var assembly = Assembly.GetExecutingAssembly();
             _handlerTypes = GetTypesWithAttribute(assembly).ToList();
 
             List<string> reservedCommands = _handlerTypes.Select(tuple => "!" + tuple.Item2.CommandAlias.TrimEnd()).ToList();
 
-            _commandMap = new CommandMap(commandRepository1);
+            _commandMap = new CommandMap(cr);
             _commandMap.Initialize().Wait();
 
             _repositoryContainer = new RepositoryContainer(
                 chatRepository,
-                commandRepository1,
+                cr,
                 gayRepository,
                 participantRepository,
                 _commandMap,
@@ -77,6 +77,12 @@ namespace GayDetectorBot.Telegram.MessageHandling
                
             var lower = message.Text.ToLower().Trim();
 
+            if (lower == "!помоги")
+            {
+                await client.SendTextMessageAsync(chatId, GetHelpMessageForChat(chatId), ParseMode.Markdown);
+                return;
+            }
+
             // Take the first word which will be the command, it must start with ! and end with a whitespace
             var whitespaceIndex = lower.IndexOf(' ');
 
@@ -98,7 +104,17 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 {
                     try
                     {
-                        await handlerData.Handler.HandleAsync(message, client);
+                        if (handlerData.Metadata.HasParameters)
+                        {
+                            var arr = data.Split(' ');
+                            if (arr.Length != handlerData.Metadata.ParameterCount)
+                                Console.WriteLine("!! WARNING: Required parameter count and actual parameter count do not match");
+                            await handlerData.Handler.HandleAsync(message, arr);
+                        }
+                        else
+                        {
+                            await handlerData.Handler.HandleAsync(message, data); 
+                        }
                     }
                     catch (TelegramCommandException e)
                     {
@@ -139,6 +155,35 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 if (attr.Length > 0)
                     yield return (type, attr[0] as MessageHandlerAttribute)!;
             }
+        }
+
+        private string GetHelpMessageForChat(long chatId)
+        {
+            var mhc = _messageHandlerMap[chatId];
+
+            var result = "Список основных команд:\n\n";
+
+            foreach (var data in mhc)
+            {
+                result += "`!";
+
+                if (data.Metadata.HasParameters)
+                {
+                    result += $"{data.Metadata.CommandAlias} ";
+
+                    result += string.Join(' ', data.Metadata.Parameters.Select(s => $"<{s}>"));
+
+                    result += "` - " + data.Metadata.Description;
+                }
+                else
+                {
+                    result += $"{data.Metadata.CommandAlias}` - {data.Metadata.Description}";
+                }
+
+                result += "\n";
+            }
+
+            return result;
         }
     }
 }

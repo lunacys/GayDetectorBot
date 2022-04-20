@@ -13,7 +13,7 @@ public class HandlerEval : HandlerBase
         : base(repositoryContainer)
     { }
 
-    public override async Task HandleAsync(Message message, ITelegramBotClient client)
+    public override async Task HandleAsync(Message message, params string[] parsedData)
     {
         var data = message.Text?.Split(" ");
         var chatId = message.Chat.Id;
@@ -23,8 +23,7 @@ public class HandlerEval : HandlerBase
 
         if (data == null || data.Length < 2)
         {
-            await client.SendTextMessageAsync(chatId, "Нет скрипта");
-            return;
+            throw Error("Нет скрипта");
         }
 
         var engine = new Engine(options =>
@@ -50,18 +49,18 @@ public class HandlerEval : HandlerBase
         {
             var result = engine.Evaluate(code);
             if (result != null)
-                await client.SendTextMessageAsync(chatId, "Результат:\n```\n" + result + "\n```", ParseMode.Markdown);
+                await SendTextAsync("Результат:\n```\n" + result + "\n```", ParseMode.Markdown);
         }
         catch (JavaScriptException e)
         {
             Console.WriteLine(e);
-            await client.SendTextMessageAsync(chatId, "Ошибка выполнения скрипта:\n" + e.Message);
+            await SendTextAsync("Ошибка выполнения скрипта:\n" + e.Message);
             return;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка:\n" + e.Message);
+            await SendTextAsync("Непредвиденная ошибка:\n" + e.Message);
             return;
         }
     }

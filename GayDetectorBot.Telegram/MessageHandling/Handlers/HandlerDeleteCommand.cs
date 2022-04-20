@@ -10,7 +10,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
         public HandlerDeleteCommand(RepositoryContainer repositoryContainer)
             : base(repositoryContainer) { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             if (message.Text == null)
                 return;
@@ -21,22 +21,20 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (data.Length < 2)
             {
-                await client.SendTextMessageAsync(chatId, "Мало данных! Нужен один параметр!");
-                return;
+                throw Error("Мало данных! Нужен один параметр!");
             }
 
             var prefix = data[1];
 
             if (!await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
-                await client.SendTextMessageAsync(chatId, $"Команды `{prefix}` не существует");
-                return;
+                throw Error($"Команды `{prefix}` не существует");
             }
 
             await RepositoryContainer.Command.DeleteCommand(prefix, chatId);
             RepositoryContainer.CommandMap[chatId]?.RemoveAll(pc => pc.Prefix == prefix);
 
-            await client.SendTextMessageAsync(chatId, $"Команда `{prefix}` успешно удалена");
+            await SendTextAsync($"Команда `{prefix}` успешно удалена");
         }
     }
 }

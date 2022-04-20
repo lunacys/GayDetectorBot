@@ -8,6 +8,6 @@ namespace GayDetectorBot.Telegram.MessageHandling
         long ChatId { get; set; }
         ITelegramBotClient Client { get; set; }
 
-        Task HandleAsync(Message message, ITelegramBotClient client);
+        Task HandleAsync(Message message, params string[] parsedData);
     }
 }

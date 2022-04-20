@@ -11,7 +11,7 @@ public abstract class HandlerBase : IMessageHandler
     public long ChatId { get; set; }
     public ITelegramBotClient Client { get; set; } = null!;
 
-    public abstract Task HandleAsync(Message message, ITelegramBotClient client);
+    public abstract Task HandleAsync(Message message, params string[] parsedData);
 
     protected HandlerBase(RepositoryContainer repositoryContainer)
     {
@@ -23,8 +23,13 @@ public abstract class HandlerBase : IMessageHandler
         await Client.SendTextMessageAsync(ChatId, message, parseMode);
     }
 
-    public virtual void Error(string message)
+    public virtual Exception Error(string message)
     {
-        throw new TelegramCommandException(message);
+        return new TelegramCommandException(message);
+    }
+
+    public virtual Exception DoError(string message)
+    {
+        throw Error(message);
     }
 }

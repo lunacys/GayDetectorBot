@@ -11,7 +11,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var chatId = message.Chat.Id;
 
@@ -30,24 +30,23 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
                     var delta = nextDate - today;
 
-                    await client.SendTextMessageAsync(chatId, $"Сегодня пидор @{gayToday}\n" +
+                    await SendTextAsync($"Сегодня пидор @{gayToday}\n" +
                                                               $"Следующее обновление через {delta.Hours}:{delta.Minutes}");
                     return;
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(chatId, $"Пидор не обнаружен");
+                    throw Error($"Пидор не обнаружен");
                 }
             }
 
-            await client.SendTextMessageAsync(chatId, "Выполняю поиск пидора...");
+            await SendTextAsync("Выполняю поиск пидора...");
 
             var pList = (await RepositoryContainer.Participant.RetrieveParticipants(chatId)).Where(p => !p.IsRemoved).ToList();
 
             if (pList.Count == 0)
             {
-                await client.SendTextMessageAsync(chatId, "Участников рулетки нет...");
-                return;
+                throw Error("Участников рулетки нет...");
             }
 
             var rand = new Random();
@@ -63,10 +62,10 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             await RepositoryContainer.Gay.AddGay(p);
 
             await Task.Delay(1000);
-            await client.SendTextMessageAsync(chatId, "Пидор обнаружен");
+            await SendTextAsync("Пидор обнаружен");
             await Task.Delay(1000);
 
-            await client.SendTextMessageAsync(chatId, $"Сегодня ты пидор, @{p.Username}");
+            await SendTextAsync($"Сегодня ты пидор, @{p.Username}");
         }
     }
 }

@@ -10,11 +10,17 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
         public HandlerCommandList(RepositoryContainer repositoryContainer)
             : base(repositoryContainer) { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var chatId = message.Chat.Id;
 
             var map = RepositoryContainer.CommandMap[chatId];
+
+            if (map.Count == 0)
+            {
+                await SendTextAsync("Список команд пуст");
+                return;
+            }
 
             var msg = "Все кастомные команды:\n";
 
@@ -23,7 +29,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 msg += $" - `{pc.Prefix}`\n";
             }
 
-            await client.SendTextMessageAsync(chatId, msg, ParseMode.Markdown);
+            await SendTextAsync(msg, ParseMode.Markdown);
         }
     }
 }

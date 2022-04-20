@@ -12,7 +12,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var data = message.Text?.Split(' ');
 
@@ -21,22 +21,19 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (data == null || data.Length < 3)
             {
-                Error("Мало данных! Надо два параметра!");
-                return;
+                throw Error("Мало данных! Надо два параметра!");
             }
 
             var prefix = data[1];
 
             if (!prefix.StartsWith('!'))
             {
-                Error("Команды должны начинаться со знака `!`");
-                return;
+                throw Error("Команды должны начинаться со знака `!`");
             }
 
             if (RepositoryContainer.ReservedCommands.Contains(prefix))
             {
-                Error("Такая команда уже занята ботом, извини");
-                return;
+                throw Error("Такая команда уже занята ботом, извини");
             }
 
             var content = data[2];
@@ -48,7 +45,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
-                Error($"Команда `{prefix}` уже существует!");
+                throw Error($"Команда `{prefix}` уже существует!");
             }
             else
             {
