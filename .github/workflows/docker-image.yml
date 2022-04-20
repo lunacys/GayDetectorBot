@@ -24,7 +24,6 @@ jobs:
           files: ./GayDetectorBot.Telegram/appconfig.json
         env:
           Token: ${{ secrets.TELEGRAM_TOKEN_PROD }}
-          DbConnectionString: ${{ env.DB_CONNECTION_STRING }}
       
       - name: Build the Docker image
         run: docker build . --file GayDetectorBot.Telegram/Dockerfile --tag gaydetectorbot:$(date +%s)
