@@ -33,14 +33,15 @@ namespace GayDetectorBot.Telegram
         {
             var appConfigFile = "appconfig.json";
 
-#if DEBUG
-            appConfigFile = "appconfig.dev.json";
-            Console.WriteLine("LOADING DEV VERSION (DEBUG)");
-#endif
-            /*#else
-                        appConfigFile = "appconfig.prod.json";
-                        Console.WriteLine("LOADING PROD VERSION (RELEASE)");
-            #endif*/
+            var env = Environment.GetEnvironmentVariable("ENVIRONMENT");
+
+            if (env != null)
+            {
+                if (env == "Production")
+                    appConfigFile = "appconfig.prod.json";
+                else if (env == "Dev")
+                    appConfigFile = "appconfig.dev.json";
+            }
 
             Console.WriteLine($"USING FILE {appConfigFile}");
 
@@ -76,7 +77,7 @@ namespace GayDetectorBot.Telegram
             if (_appConfig == null)
                 return;
 
-            _telegramClient = new TelegramBotClient(_appConfig.Token);
+            _telegramClient = new TelegramBotClient(_appConfig.Token.Trim());
 
             var receiverOptions = new ReceiverOptions
             {
