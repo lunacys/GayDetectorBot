@@ -17,6 +17,14 @@ jobs:
       
       - name: submodules-init
         uses: snickerbockers/submodules-init@v4
+        
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: '${{env.DOTNET_ROOT}}/GayDetectorBot.Telegram/appconfig.json'
+        env:
+          Token: ${{ secrets.TELEGRAM_TOKEN_PROD }}
+          DbConnectionString: ${{ env.DB_CONNECTION_STRING }}
       
       - name: Build the Docker image
         run: docker build . --file GayDetectorBot.Telegram/Dockerfile --tag gaydetectorbot:$(date +%s)
