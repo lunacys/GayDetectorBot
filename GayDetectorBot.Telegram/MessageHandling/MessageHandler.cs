@@ -84,7 +84,7 @@ namespace GayDetectorBot.Telegram.MessageHandling
             }
 
             // Take the first word which will be the command, it must start with ! and end with a whitespace
-            var whitespaceIndex = lower.IndexOf(' ');
+            var whitespaceIndex = lower.IndexOfAny(new []{' ', '\n'});
 
             var command = lower;
 
@@ -94,7 +94,7 @@ namespace GayDetectorBot.Telegram.MessageHandling
             // Remove the ! symbol from the beginning
             command = command.Remove(0, 1);
 
-            var data = lower.Substring(lower.IndexOf(' ') + 1);
+            var data = lower.Substring(lower.IndexOfAny(new []{' ', '\n'}) + 1);
 
             var mhc = _messageHandlerMap[chatId];
 
@@ -106,14 +106,41 @@ namespace GayDetectorBot.Telegram.MessageHandling
                     {
                         if (handlerData.Metadata.HasParameters)
                         {
-                            var arr = data.Split(' ');
-                            if (arr.Length != handlerData.Metadata.ParameterCount)
-                                Console.WriteLine("!! WARNING: Required parameter count and actual parameter count do not match");
-                            await handlerData.Handler.HandleAsync(message, arr);
+                            var paramList = new List<string>(handlerData.Metadata.ParameterCount);
+
+                            var lastIndex = 0;
+                            var curIndex = 0;
+
+                            while (lastIndex < data.Length)
+                            {
+                                if (curIndex + 1 >= handlerData.Metadata.ParameterCount)
+                                {
+                                    var str = data.Substring(lastIndex);
+                                    paramList.Add(str);
+                                    lastIndex = data.Length;
+                                }
+                                else
+                                {
+                                    var res = ReadUntilWhitespace(data, lastIndex);
+                                    paramList.Add(res.Item1);
+                                    lastIndex = res.Item2 + 1;
+                                    curIndex++;
+                                }
+                            }
+
+                            /*
+                            for (int i = 0; i < handlerData.Metadata.ParameterCount; i++)
+                            {
+                                
+                            }*/
+                            // var arr = data.Split(' ');
+                            //if (arr.Length != handlerData.Metadata.ParameterCount)
+                            //    Console.WriteLine("!! WARNING: Required parameter count and actual parameter count do not match");
+                            await handlerData.Handler.HandleAsync(message, paramList.ToArray());
                         }
                         else
                         {
-                            await handlerData.Handler.HandleAsync(message, data); 
+                            await handlerData.Handler.HandleAsync(message, data.Trim()); 
                         }
                     }
                     catch (TelegramCommandException e)
@@ -139,11 +166,29 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 if (content != null)
                 {
                     var c = content.Content;
+                    if (string.IsNullOrEmpty(c))
+                        return;
+
                     if (c.ToLower() != "@gamee")
                         c = c.Replace("@", "");
                     await client.SendTextMessageAsync(message.Chat.Id, c);
                 }
             }
+        }
+
+        private static (string, int) ReadUntilWhitespace(string str, int startIndex = 0)
+        {
+            var result = "";
+
+            for (int i = startIndex; i < str.Length; i++)
+            {
+                if (str[i] == ' ' || str[i] == '\n')
+                    return (result, i);
+
+                result += str[i];
+            }
+
+            return (result, str.Length);
         }
 
         private static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)

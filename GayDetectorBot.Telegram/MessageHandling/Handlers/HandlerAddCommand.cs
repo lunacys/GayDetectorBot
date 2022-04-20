@@ -14,17 +14,15 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
         public override async Task HandleAsync(Message message, params string[] parsedData)
         {
-            var data = message.Text?.Split(' ');
-
             var chatId = message.Chat.Id;
 
 
-            if (data == null || data.Length < 3)
+            if (parsedData == null || parsedData.Length < 2)
             {
                 throw Error("Мало данных! Надо два параметра!");
             }
 
-            var prefix = data[1];
+            var prefix = parsedData[0];
 
             if (!prefix.StartsWith('!'))
             {
@@ -36,12 +34,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 throw Error("Такая команда уже занята ботом, извини");
             }
 
-            var content = data[2];
-
-            for (int i = 3; i < data.Length; i++)
-            {
-                content += " " + data[i];
-            }
+            var content = parsedData[1];
 
             if (await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
