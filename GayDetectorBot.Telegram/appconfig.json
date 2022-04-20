@@ -1,4 +1,4 @@
 ﻿{
   "Token": "",
-  "DbConnectionString": ""
+  "DbConnectionString": "Data Source=TgData.db"
 }
