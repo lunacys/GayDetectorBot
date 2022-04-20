@@ -2,6 +2,7 @@
 using GayDetectorBot.Telegram.Data.Repos;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandling
 {
@@ -42,9 +43,9 @@ namespace GayDetectorBot.Telegram.MessageHandling
             _messageHandlerMap = new Dictionary<long, MessageHandlerContainer>();
         }
 
-        private void InitializeChat(long chatId)
+        private void InitializeChat(long chatId, ITelegramBotClient client)
         {
-            _messageHandlerMap[chatId] = new MessageHandlerContainer(_repositoryContainer, chatId);
+            _messageHandlerMap[chatId] = new MessageHandlerContainer(_repositoryContainer, chatId, client);
             
             foreach (var valueTuple in _handlerTypes)
             {
@@ -71,7 +72,7 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
             if (!_messageHandlerMap.ContainsKey(chatId))
             {
-                InitializeChat(chatId);
+                InitializeChat(chatId, client);
             }
                
             var lower = message.Text.ToLower().Trim();
@@ -95,7 +96,20 @@ namespace GayDetectorBot.Telegram.MessageHandling
             {
                 if (handlerData.Metadata.CommandAlias == command)
                 {
-                    await handlerData.Handler.HandleAsync(message, client);
+                    try
+                    {
+                        await handlerData.Handler.HandleAsync(message, client);
+                    }
+                    catch (TelegramCommandException e)
+                    {
+                        await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message, ParseMode.Markdown);
+                    }
+                    
                     return;
                 }
             }

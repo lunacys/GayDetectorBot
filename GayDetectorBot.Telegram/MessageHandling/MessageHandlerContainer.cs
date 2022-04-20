@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Reflection;
+using Telegram.Bot;
 
 namespace GayDetectorBot.Telegram.MessageHandling;
 
@@ -15,12 +16,14 @@ public class MessageHandlerContainer : IEnumerable<HandlerMetadata>
     private readonly RepositoryContainer _repositoryContainer;
 
     public long ChatId { get; }
+    public ITelegramBotClient Client { get; }
 
-    public MessageHandlerContainer(RepositoryContainer repoContainer, long chatId)
+    public MessageHandlerContainer(RepositoryContainer repoContainer, long chatId, ITelegramBotClient client)
     {
         _handlers = new List<HandlerMetadata>();
         _repositoryContainer = repoContainer;
         ChatId = chatId;
+        Client = client;
     }
 
     public void Register(IMessageHandler handler)
@@ -32,6 +35,7 @@ public class MessageHandlerContainer : IEnumerable<HandlerMetadata>
             throw new ArgumentException($"No MessageHandlerAttribute found for type {type.Name}");
 
         handler.ChatId = ChatId;
+        handler.Client = Client;
 
         _handlers.Add(new HandlerMetadata
         {

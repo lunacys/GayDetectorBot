@@ -21,7 +21,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (data == null || data.Length < 3)
             {
-                await Send(client, chatId, "Мало данных! Надо два параметра!");
+                Error("Мало данных! Надо два параметра!");
                 return;
             }
 
@@ -29,13 +29,13 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (!prefix.StartsWith('!'))
             {
-                await client.SendTextMessageAsync(chatId, "Команды должны начинаться со знака `!`", ParseMode.Markdown);
+                Error("Команды должны начинаться со знака `!`");
                 return;
             }
 
             if (RepositoryContainer.ReservedCommands.Contains(prefix))
             {
-                await client.SendTextMessageAsync(chatId, "Такая команда уже занята ботом, извини", ParseMode.Markdown);
+                Error("Такая команда уже занята ботом, извини");
                 return;
             }
 
@@ -48,14 +48,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
-                await client.SendTextMessageAsync(chatId, $"Команда `{prefix}` уже существует!", ParseMode.Markdown);
+                Error($"Команда `{prefix}` уже существует!");
             }
             else
             {
                 if (message.From != null && message.From.Username != null)
                     await RepositoryContainer.Command.AddCommand(chatId, message.From.Username, prefix, content);
                 else
-                    await client.SendTextMessageAsync(chatId, $"Неизвестный пользователь");
+                    Error($"Неизвестный пользователь");
 
                 if (!RepositoryContainer.CommandMap.ContainsKey(chatId))
                 {
@@ -68,7 +68,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     Content = content
                 });
 
-                await client.SendTextMessageAsync(chatId, $"Команда `{prefix}` добавлена успешно", ParseMode.Markdown);
+                await SendTextAsync($"Команда `{prefix}` добавлена успешно");
             }
         }
     }

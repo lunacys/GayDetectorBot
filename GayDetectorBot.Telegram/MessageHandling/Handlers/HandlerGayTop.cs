@@ -14,7 +14,6 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
         public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
-
             var chatId = message.Chat.Id;
 
             var gays = (await RepositoryContainer.Gay.RetrieveGays(chatId)).ToList();
