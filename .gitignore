@@ -4,3 +4,4 @@ obj/
 /GayDetectorBot/appconfig.json
 /GayDetectorBot.Telegram/appconfig.dev.json
 /GayDetectorBot.Telegram/appconfig.prod.json
+/GayDetectorBot.Telegram/GayDetectorBot.Telegram.csproj.user

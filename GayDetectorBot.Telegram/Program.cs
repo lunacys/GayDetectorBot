@@ -54,8 +54,6 @@ namespace GayDetectorBot.Telegram
             if (_appConfig == null)
                 throw new Exception($"Could not load {appConfigFile}");
 
-            Console.WriteLine($"Token: {_appConfig.Token}\nDbConnectionString: {_appConfig.DbConnectionString}");
-
             _dataContext = new DataContext(_appConfig.DbConnectionString, "TgData.db");
 
             _dataContext.Initialize();
