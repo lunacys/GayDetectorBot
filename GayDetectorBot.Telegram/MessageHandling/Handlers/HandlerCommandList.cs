@@ -5,27 +5,16 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("команды", "список всех пользовательских команд", MemberStatusPermission.All)]
-    public class HandlerCommandList : IMessageHandler
+    public class HandlerCommandList : HandlerBase
     {
-        public string CommandString => "!команды";
+        public HandlerCommandList(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer) { }
 
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
-
-        public bool HasParameters => false;
-
-        private readonly CommandMap _commandMap;
-
-        public HandlerCommandList(CommandMap commandMap)
-        {
-            _commandMap = commandMap;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var chatId = message.Chat.Id;
 
-            var map = _commandMap[chatId];
+            var map = RepositoryContainer.CommandMap[chatId];
 
             var msg = "Все кастомные команды:\n";
 

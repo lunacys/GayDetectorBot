@@ -6,23 +6,13 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("добавить-команду", "добавить кастомную команду", "название-команды", "текстовое содержание")]
-    public class HandlerAddCommand : IMessageHandler
+    public class HandlerAddCommand : HandlerBase
     {
-        public string CommandString => "!добавить-команду ";
-        public bool HasParameters => true;
+        public HandlerAddCommand(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        private readonly CommandRepository _commandRepository;
-        private readonly CommandMap _commandMap;
-        private readonly IEnumerable<string> _reservedCommands;
-
-        public HandlerAddCommand(CommandRepository commandRepo, CommandMap commandMap, IEnumerable<string> reservedCommands)
-        {
-            _commandRepository = commandRepo;
-            _commandMap = commandMap;
-            _reservedCommands = reservedCommands;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var data = message.Text?.Split(' ');
 
@@ -31,7 +21,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (data == null || data.Length < 3)
             {
-                await client.SendTextMessageAsync(chatId, "Мало данных! Надо два параметра!");
+                await Send(client, chatId, "Мало данных! Надо два параметра!");
                 return;
             }
 
@@ -43,7 +33,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 return;
             }
 
-            if (_reservedCommands.Contains(prefix))
+            if (RepositoryContainer.ReservedCommands.Contains(prefix))
             {
                 await client.SendTextMessageAsync(chatId, "Такая команда уже занята ботом, извини", ParseMode.Markdown);
                 return;
@@ -55,25 +45,24 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             {
                 content += " " + data[i];
             }
-            
-            
-            if (await _commandRepository.CommandExists(prefix, chatId))
+
+            if (await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
                 await client.SendTextMessageAsync(chatId, $"Команда `{prefix}` уже существует!", ParseMode.Markdown);
             }
             else
             {
                 if (message.From != null && message.From.Username != null)
-                    await _commandRepository.AddCommand(chatId, message.From.Username, prefix, content);
+                    await RepositoryContainer.Command.AddCommand(chatId, message.From.Username, prefix, content);
                 else
                     await client.SendTextMessageAsync(chatId, $"Неизвестный пользователь");
 
-                if (!_commandMap.ContainsKey(chatId))
+                if (!RepositoryContainer.CommandMap.ContainsKey(chatId))
                 {
-                    _commandMap[chatId] = new List<PrefixContent>();
+                    RepositoryContainer.CommandMap[chatId] = new List<PrefixContent>();
                 }
 
-                _commandMap[chatId].Add(new PrefixContent
+                RepositoryContainer.CommandMap[chatId].Add(new PrefixContent
                 {
                     Prefix = prefix,
                     Content = content

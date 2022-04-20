@@ -5,24 +5,17 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("участники", "список всех участников", MemberStatusPermission.All)]
-    public class HandlerParticipants : IMessageHandler
+    public class HandlerParticipants : HandlerBase
     {
-        public string CommandString => "!участники";
+        public HandlerParticipants(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public bool HasParameters => false;
-
-        private readonly ParticipantRepository _participantRepository;
-
-        public HandlerParticipants(ParticipantRepository participantRepository)
-        {
-            _participantRepository = participantRepository;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var chatId = message.Chat.Id;
 
-            var pList = await _participantRepository.RetrieveParticipants(chatId);
+            var pList = await RepositoryContainer.Participant.RetrieveParticipants(chatId);
 
             string listStr = "";
 

@@ -5,38 +5,24 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
-    public class HandlerFindGay : IMessageHandler
+    public class HandlerFindGay : HandlerBase
     {
-        public string CommandString => "!ктопидор";
+        public HandlerFindGay(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
-
-        public bool HasParameters => false;
-
-        private readonly ChatRepository _chatRepository;
-        private readonly ParticipantRepository _participantRepository;
-        private readonly GayRepository _gayRepository;
-
-        public HandlerFindGay(ChatRepository chatRepository, ParticipantRepository participantRepository, GayRepository gayRepository)
-        {
-            _chatRepository = chatRepository;
-            _participantRepository = participantRepository;
-            _gayRepository = gayRepository;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var chatId = message.Chat.Id;
 
-            var lastCheck = await _chatRepository.ChatLastChecked(chatId);
+            var lastCheck = await RepositoryContainer.Chat.ChatLastChecked(chatId);
 
             var today = DateTimeOffset.Now;
 
             if (lastCheck.HasValue && lastCheck.Value.Day == today.Day && lastCheck.Value.Month == today.Month &&
                 lastCheck.Value.Year == today.Year)
             {
-                var gayToday = await _chatRepository.GetLastGay(chatId);
+                var gayToday = await RepositoryContainer.Chat.GetLastGay(chatId);
 
                 if (!string.IsNullOrEmpty(gayToday))
                 {
@@ -56,7 +42,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             await client.SendTextMessageAsync(chatId, "Выполняю поиск пидора...");
 
-            var pList = (await _participantRepository.RetrieveParticipants(chatId)).Where(p => !p.IsRemoved).ToList();
+            var pList = (await RepositoryContainer.Participant.RetrieveParticipants(chatId)).Where(p => !p.IsRemoved).ToList();
 
             if (pList.Count == 0)
             {
@@ -70,11 +56,11 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             var p = pList[i];
 
             if (!lastCheck.HasValue)
-                await _chatRepository.ChatAdd(chatId, DateTimeOffset.Now, p.Username);
+                await RepositoryContainer.Chat.ChatAdd(chatId, DateTimeOffset.Now, p.Username);
             else
-                await _chatRepository.ChatUpdate(chatId, p.Username);
+                await RepositoryContainer.Chat.ChatUpdate(chatId, p.Username);
 
-            await _gayRepository.AddGay(p);
+            await RepositoryContainer.Gay.AddGay(p);
 
             await Task.Delay(1000);
             await client.SendTextMessageAsync(chatId, "Пидор обнаружен");

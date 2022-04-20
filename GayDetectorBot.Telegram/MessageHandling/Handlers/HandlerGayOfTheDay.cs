@@ -5,22 +5,13 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("пидордня", "стать участником рулетки", MemberStatusPermission.All)]
-    public class HandlerGayOfTheDay : IMessageHandler
+    public class HandlerGayOfTheDay : HandlerBase
     {
-        public string CommandString => "!пидордня";
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
+        public HandlerGayOfTheDay(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public bool HasParameters => false;
-
-        private readonly ParticipantRepository _participantRepository;
-
-        public HandlerGayOfTheDay(ParticipantRepository participantRepository)
-        {
-            _participantRepository = participantRepository;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var from = message?.From;
@@ -28,13 +19,13 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             if (from == null || from.Username == null)
                 return;
 
-            if (await _participantRepository.IsStartedForUser(from.Username, chatId))
+            if (await RepositoryContainer.Participant.IsStartedForUser(from.Username, chatId))
             {
                 await client.SendTextMessageAsync(chatId, $"Ты итак в деле, @{from.Username}");
             }
             else
             {
-                await _participantRepository.AddUser(from.Username, chatId);
+                await RepositoryContainer.Participant.AddUser(from.Username, chatId);
 
                 await client.SendTextMessageAsync(chatId, $"Поздравляю, ты в деле, @{from.Username}!");
             }

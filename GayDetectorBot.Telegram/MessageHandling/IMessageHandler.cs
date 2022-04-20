@@ -5,8 +5,6 @@ namespace GayDetectorBot.Telegram.MessageHandling
 {
     public interface IMessageHandler
     {
-        public string CommandString { get; }
-        public bool HasParameters { get; }
         Task HandleAsync(Message message, ITelegramBotClient client);
     }
 }

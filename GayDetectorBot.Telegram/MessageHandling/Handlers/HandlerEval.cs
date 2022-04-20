@@ -7,14 +7,13 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers;
 
 [MessageHandler("eval", "выполнить скрипт на JavaScript", "скрипт")]
-public class HandlerEval : IMessageHandler
+public class HandlerEval : HandlerBase
 {
-    public string CommandString => "!eval ";
-    public bool HasParameters => true;
-    public MemberStatusPermission Permissions =>
-        MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
+    public HandlerEval(RepositoryContainer repositoryContainer)
+        : base(repositoryContainer)
+    { }
 
-    public async Task HandleAsync(Message message, ITelegramBotClient client)
+    public override async Task HandleAsync(Message message, ITelegramBotClient client)
     {
         var data = message.Text?.Split(" ");
         var chatId = message.Chat.Id;

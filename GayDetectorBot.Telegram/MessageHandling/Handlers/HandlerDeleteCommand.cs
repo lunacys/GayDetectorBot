@@ -5,25 +5,12 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("удалить-команду", "удалить кастомную команду", "название-команды")]
-    public class HandlerDeleteCommand : IMessageHandler
+    public class HandlerDeleteCommand : HandlerBase
     {
-        public string CommandString => "!удалить-команду";
+        public HandlerDeleteCommand(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer) { }
 
-        public bool HasParameters => true;
-
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
-
-        private readonly CommandRepository _commandRepository;
-        private readonly CommandMap _commandMap;
-
-        public HandlerDeleteCommand(CommandRepository commandRepository, CommandMap commandMap)
-        {
-            _commandRepository = commandRepository;
-            _commandMap = commandMap;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             if (message.Text == null)
                 return;
@@ -40,14 +27,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             var prefix = data[1];
 
-            if (!await _commandRepository.CommandExists(prefix, chatId))
+            if (!await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {
                 await client.SendTextMessageAsync(chatId, $"Команды `{prefix}` не существует");
                 return;
             }
 
-            await _commandRepository.DeleteCommand(prefix, chatId);
-            _commandMap[chatId]?.RemoveAll(pc => pc.Prefix == prefix);
+            await RepositoryContainer.Command.DeleteCommand(prefix, chatId);
+            RepositoryContainer.CommandMap[chatId]?.RemoveAll(pc => pc.Prefix == prefix);
 
             await client.SendTextMessageAsync(chatId, $"Команда `{prefix}` успешно удалена");
         }

@@ -6,23 +6,13 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("добавить", "добавить пользователя в список рулетки с ссылкой на него", "@тег_пользователя")]
-    public class HandlerAddParticipant : IMessageHandler
+    public class HandlerAddParticipant : HandlerBase
     {
-        public string CommandString => "!добавить ";
+        public HandlerAddParticipant(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public bool HasParameters => true;
-
-        public MemberStatusPermission Permissions =>
-            MemberStatusPermission.Administrator | MemberStatusPermission.Creator;
-
-        private readonly ParticipantRepository _participantRepository;
-
-        public HandlerAddParticipant(ParticipantRepository participantRepository)
-        {
-            _participantRepository = participantRepository;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             var data = message.Text?.Split(" ");
 
@@ -69,13 +59,13 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 return;
             }
 
-            if (await _participantRepository.IsStartedForUser(username, chatId))
+            if (await RepositoryContainer.Participant.IsStartedForUser(username, chatId))
             {
                 await client.SendTextMessageAsync(chatId, $"Этот парень итак в деле");
             }
             else
             {
-                await _participantRepository.AddUser(username, chatId);
+                await RepositoryContainer.Participant.AddUser(username, chatId);
 
                 await client.SendTextMessageAsync(chatId, $"Поздравляю, ты в деле, @{username}!");
             }

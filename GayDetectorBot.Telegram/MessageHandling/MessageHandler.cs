@@ -8,16 +8,8 @@ namespace GayDetectorBot.Telegram.MessageHandling
 {
     public class MessageHandler
     {
-        private readonly CommandRepository _commandRepository;
-        private readonly GayRepository _gayRepository;
-        private readonly ChatRepository _chatRepository;
-        private readonly ParticipantRepository _participantRepository;
-
-        private List<IMessageHandler> _messageHandlers;
-        
-        private CommandMap? _commandMap;
-
-        private readonly List<string> _reservedCommands;
+        private readonly CommandMap? _commandMap;
+        private readonly MessageHandlerContainer _messageHandlerContainer;
 
         public MessageHandler(
             CommandRepository commandRepository, 
@@ -25,38 +17,35 @@ namespace GayDetectorBot.Telegram.MessageHandling
             ChatRepository chatRepository, 
             ParticipantRepository participantRepository)
         {
-            _commandRepository = commandRepository;
-            _gayRepository = gayRepository;
-            _chatRepository = chatRepository;
-            _participantRepository = participantRepository;
-            _messageHandlers = new List<IMessageHandler>();
+            var commandRepository1 = commandRepository;
 
             var assembly = Assembly.GetExecutingAssembly();
-            var types = GetTypesWithAttribute(assembly);
+            var types = GetTypesWithAttribute(assembly).ToList();
 
-            _reservedCommands = types.Select(tuple => "!" + tuple.attribute.CommandAlias.TrimEnd()).ToList();
-        }
+            List<string> reservedCommands = types.Select(tuple => "!" + tuple.attribute.CommandAlias.TrimEnd()).ToList();
 
-        private async Task InitializeCustomCommands()
-        {
-            _commandMap = new CommandMap(_commandRepository);
-            await _commandMap.Initialize();
+            _commandMap = new CommandMap(commandRepository1);
+            _commandMap.Initialize().Wait();
 
-            _messageHandlers = new List<IMessageHandler>
+            var repositoryContainer = new RepositoryContainer(
+                chatRepository,
+                commandRepository1,
+                gayRepository,
+                participantRepository,
+                _commandMap,
+                reservedCommands
+            );
+
+            _messageHandlerContainer = new MessageHandlerContainer(repositoryContainer);
+
+            foreach (var valueTuple in types)
             {
-                new HandlerAddCommand(_commandRepository, _commandMap, _reservedCommands),
-                new HandlerAddParticipant(_participantRepository),
-                new HandlerCommandList(_commandMap),
-                new HandlerDeleteCommand(_commandRepository, _commandMap),
-                new HandlerFindGay(_chatRepository, _participantRepository, _gayRepository),
-                new HandlerGayOfTheDay(_participantRepository),
-                new HandlerGayTop(_gayRepository),
-                new HandlerHelp(),
-                new HandlerParticipants(_participantRepository),
-                new HandlerRandom(_commandMap),
-                new HandlerRemoveMe(_participantRepository),
-                new HandlerEval()
-            };
+                var mh = Activator.CreateInstance(valueTuple.type, repositoryContainer) as IMessageHandler;
+                if (mh == null)
+                    throw new Exception("Could not create an instance");
+
+                _messageHandlerContainer.Register(mh);
+            }
         }
 
         public async Task Message(Message? message, ITelegramBotClient client)
@@ -64,41 +53,48 @@ namespace GayDetectorBot.Telegram.MessageHandling
             if (message == null)
                 return;
 
-            if (_commandMap == null)
-            {
-                await InitializeCustomCommands();
-            }
-
             if (string.IsNullOrEmpty(message.Text))
                 return;
 
-            var lower = message.Text.ToLower().TrimEnd();
+            if (!message.Text.StartsWith("!"))
+                return;
+               
+            var lower = message.Text.ToLower().Trim();
 
-            bool any = false;
+            // Take the first word which will be the command, it must start with ! and end with a whitespace
+            var whitespaceIndex = lower.IndexOf(' ');
 
-            foreach (var handler in _messageHandlers)
+            var command = lower;
+
+            if (whitespaceIndex >= 0)
+                command = lower.Substring(0, whitespaceIndex);
+
+            // Remove the ! symbol from the beginning
+            command = command.Remove(0, 1);
+
+            var data = lower.Substring(lower.IndexOf(' ') + 1);
+
+            foreach (var handlerData in _messageHandlerContainer)
             {
-                if (handler.HasParameters && lower.StartsWith(handler.CommandString))
+                if (handlerData.Metadata.CommandAlias == command)
                 {
-                    await handler.HandleAsync(message, client);
-                    any = true;
-                }
-                else if (handler.CommandString == lower)
-                {
-                    await handler.HandleAsync(message, client);
-                    any = true;
+                    await handlerData.Handler.HandleAsync(message, client);
+                    return;
                 }
             }
-
-            if (any)
-                return;
-
+            
+            // Checking if command is a custom command
             if (_commandMap!.ContainsKey(message.Chat.Id))
             {
                 var content = _commandMap[message.Chat.Id].FirstOrDefault(prefixContent =>
                     prefixContent.Prefix.ToLower() == message.Text.ToLower());
                 if (content != null)
-                    await client.SendTextMessageAsync(message.Chat.Id, content.Content);
+                {
+                    var c = content.Content;
+                    if (c.ToLower() != "@gamee")
+                        c = c.Replace("@", "");
+                    await client.SendTextMessageAsync(message.Chat.Id, c);
+                }
             }
         }
 

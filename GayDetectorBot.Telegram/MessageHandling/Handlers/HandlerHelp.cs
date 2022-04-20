@@ -5,13 +5,13 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("помоги", "увидеть это сообщение ещё раз", MemberStatusPermission.All)]
-    public class HandlerHelp : IMessageHandler
+    public class HandlerHelp : HandlerBase
     {
-        public string CommandString => "!помоги";
+        public HandlerHelp(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public bool HasParameters => false;
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
             await client.SendTextMessageAsync(message.Chat.Id, "Тебе уже ничто не поможет...\n\n" +
                                                    "`!добавить <mention>` - добавить пользователя в список рулетки с ссылкой на него\n" +

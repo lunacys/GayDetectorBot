@@ -6,25 +6,18 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("топпидоров", "узнать топ пидоров за всё время", MemberStatusPermission.All)]
-    public class HandlerGayTop : IMessageHandler
+    public class HandlerGayTop : HandlerBase
     {
-        public string CommandString => "!топпидоров";
+        public HandlerGayTop(RepositoryContainer repositoryContainer)
+            : base(repositoryContainer)
+        { }
 
-        public bool HasParameters => false;
-
-        private readonly GayRepository _gayRepository;
-
-        public HandlerGayTop(GayRepository gayRepository)
-        {
-            _gayRepository = gayRepository;
-        }
-
-        public async Task HandleAsync(Message message, ITelegramBotClient client)
+        public override async Task HandleAsync(Message message, ITelegramBotClient client)
         {
 
             var chatId = message.Chat.Id;
 
-            var gays = (await _gayRepository.RetrieveGays(chatId)).ToList();
+            var gays = (await RepositoryContainer.Gay.RetrieveGays(chatId)).ToList();
 
             if (gays.Count == 0)
             {
