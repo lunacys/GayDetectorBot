@@ -31,14 +31,29 @@ namespace GayDetectorBot.Telegram
 
         private async Task Initialize()
         {
-            using (var sr = new StreamReader("appconfig.json"))
+            var appConfigFile = "appconfig.json";
+
+#if DEBUG
+            appConfigFile = "appconfig.dev.json";
+            Console.WriteLine("LOADING DEV VERSION (DEBUG)");
+#endif
+            /*#else
+                        appConfigFile = "appconfig.prod.json";
+                        Console.WriteLine("LOADING PROD VERSION (RELEASE)");
+            #endif*/
+
+            Console.WriteLine($"USING FILE {appConfigFile}");
+
+            using (var sr = new StreamReader(appConfigFile))
             {
                 var text = await sr.ReadToEndAsync();
                 _appConfig = JsonConvert.DeserializeObject<AppConfig>(text);
             }
 
             if (_appConfig == null)
-                throw new Exception("Could not load appconfig.json");
+                throw new Exception($"Could not load {appConfigFile}");
+
+            Console.WriteLine($"Token: {_appConfig.Token}\nDbConnectionString: {_appConfig.DbConnectionString}");
 
             _dataContext = new DataContext(_appConfig.DbConnectionString, "TgData.db");
 
