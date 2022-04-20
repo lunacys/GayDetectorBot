@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using GayDetectorBot.Telegram.Data.Repos;
-using GayDetectorBot.Telegram.MessageHandling.Handlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -9,7 +8,11 @@ namespace GayDetectorBot.Telegram.MessageHandling
     public class MessageHandler
     {
         private readonly CommandMap? _commandMap;
-        private readonly MessageHandlerContainer _messageHandlerContainer;
+        private readonly RepositoryContainer _repositoryContainer;
+
+        private readonly Dictionary<long, MessageHandlerContainer> _messageHandlerMap;
+
+        private readonly List<(Type, MessageHandlerAttribute)> _handlerTypes;
 
         public MessageHandler(
             CommandRepository commandRepository, 
@@ -20,14 +23,14 @@ namespace GayDetectorBot.Telegram.MessageHandling
             var commandRepository1 = commandRepository;
 
             var assembly = Assembly.GetExecutingAssembly();
-            var types = GetTypesWithAttribute(assembly).ToList();
+            _handlerTypes = GetTypesWithAttribute(assembly).ToList();
 
-            List<string> reservedCommands = types.Select(tuple => "!" + tuple.attribute.CommandAlias.TrimEnd()).ToList();
+            List<string> reservedCommands = _handlerTypes.Select(tuple => "!" + tuple.Item2.CommandAlias.TrimEnd()).ToList();
 
             _commandMap = new CommandMap(commandRepository1);
             _commandMap.Initialize().Wait();
 
-            var repositoryContainer = new RepositoryContainer(
+            _repositoryContainer = new RepositoryContainer(
                 chatRepository,
                 commandRepository1,
                 gayRepository,
@@ -36,15 +39,20 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 reservedCommands
             );
 
-            _messageHandlerContainer = new MessageHandlerContainer(repositoryContainer);
+            _messageHandlerMap = new Dictionary<long, MessageHandlerContainer>();
+        }
 
-            foreach (var valueTuple in types)
+        private void InitializeChat(long chatId)
+        {
+            _messageHandlerMap[chatId] = new MessageHandlerContainer(_repositoryContainer, chatId);
+            
+            foreach (var valueTuple in _handlerTypes)
             {
-                var mh = Activator.CreateInstance(valueTuple.type, repositoryContainer) as IMessageHandler;
+                var mh = Activator.CreateInstance(valueTuple.Item1, _repositoryContainer) as IMessageHandler;
                 if (mh == null)
                     throw new Exception("Could not create an instance");
 
-                _messageHandlerContainer.Register(mh);
+                _messageHandlerMap[chatId].Register(mh);
             }
         }
 
@@ -58,6 +66,13 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
             if (!message.Text.StartsWith("!"))
                 return;
+
+            var chatId = message.Chat.Id;
+
+            if (!_messageHandlerMap.ContainsKey(chatId))
+            {
+                InitializeChat(chatId);
+            }
                
             var lower = message.Text.ToLower().Trim();
 
@@ -74,7 +89,9 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
             var data = lower.Substring(lower.IndexOf(' ') + 1);
 
-            foreach (var handlerData in _messageHandlerContainer)
+            var mhc = _messageHandlerMap[chatId];
+
+            foreach (var handlerData in mhc)
             {
                 if (handlerData.Metadata.CommandAlias == command)
                 {
@@ -86,8 +103,9 @@ namespace GayDetectorBot.Telegram.MessageHandling
             // Checking if command is a custom command
             if (_commandMap!.ContainsKey(message.Chat.Id))
             {
-                var content = _commandMap[message.Chat.Id].FirstOrDefault(prefixContent =>
-                    prefixContent.Prefix.ToLower() == message.Text.ToLower());
+                var content = _commandMap[message.Chat.Id]
+                    .FirstOrDefault(prefixContent => prefixContent.Prefix.ToLower() == message.Text.ToLower());
+
                 if (content != null)
                 {
                     var c = content.Content;

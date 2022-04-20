@@ -6,7 +6,9 @@ namespace GayDetectorBot.Telegram.MessageHandling;
 public abstract class HandlerBase : IMessageHandler
 {
     protected RepositoryContainer RepositoryContainer { get; }
-    
+
+    public long ChatId { get; set; }
+
     public abstract Task HandleAsync(Message message, ITelegramBotClient client);
 
     protected HandlerBase(RepositoryContainer repositoryContainer)

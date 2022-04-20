@@ -5,6 +5,8 @@ namespace GayDetectorBot.Telegram.MessageHandling
 {
     public interface IMessageHandler
     {
+        long ChatId { get; set; }
+
         Task HandleAsync(Message message, ITelegramBotClient client);
     }
 }

@@ -14,10 +14,13 @@ public class MessageHandlerContainer : IEnumerable<HandlerMetadata>
     private readonly List<HandlerMetadata> _handlers;
     private readonly RepositoryContainer _repositoryContainer;
 
-    public MessageHandlerContainer(RepositoryContainer repoContainer)
+    public long ChatId { get; }
+
+    public MessageHandlerContainer(RepositoryContainer repoContainer, long chatId)
     {
         _handlers = new List<HandlerMetadata>();
         _repositoryContainer = repoContainer;
+        ChatId = chatId;
     }
 
     public void Register(IMessageHandler handler)
@@ -27,6 +30,8 @@ public class MessageHandlerContainer : IEnumerable<HandlerMetadata>
 
         if (attr == null)
             throw new ArgumentException($"No MessageHandlerAttribute found for type {type.Name}");
+
+        handler.ChatId = ChatId;
 
         _handlers.Add(new HandlerMetadata
         {
