@@ -14,11 +14,11 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
         public override async Task HandleAsync(Message message, params string[] parsedData)
         {
-            var data = message.Text?.Split(" ");
+            var data = parsedData;
 
             var chatId = message.Chat.Id;
 
-            if (data == null || data.Length < 2)
+            if (data == null || data.Length < 1)
             {
                 throw Error("Укажи пользователя, дурачок");
             }
@@ -26,7 +26,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             var from = message.From;
             if (from == null)
             {
-                throw Error("Неизвестный пользователь");
+                throw Error($"Неизвестный пользователь");
             }
 
             var chatMember = await Client.GetChatMemberAsync(chatId, from.Id);
@@ -36,9 +36,11 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 throw Error("А тебе низя такое делать!");
             }
 
-            var userRaw = data[1];
+            var userRaw = data[0];
             if (string.IsNullOrEmpty(userRaw))
-                return;
+            {
+                throw Error("Укажи пользователя, дурачок");
+            }
 
             string username;
 
@@ -52,8 +54,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             }
             else
             {
-                Error("Какой-то неправильный пользователь");
-                return;
+                throw Error($"Какой-то неправильный пользователь `{parsedData[0]}`");
             }
 
             if (await RepositoryContainer.Participant.IsStartedForUser(username, chatId))

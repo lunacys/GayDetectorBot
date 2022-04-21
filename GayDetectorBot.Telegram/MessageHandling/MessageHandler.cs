@@ -94,7 +94,13 @@ namespace GayDetectorBot.Telegram.MessageHandling
             // Remove the ! symbol from the beginning
             command = command.Remove(0, 1);
 
-            var data = lower.Substring(lower.IndexOfAny(new []{' ', '\n'}) + 1);
+            string? data;
+
+            var i = message.Text.IndexOfAny(new[] { ' ', '\n' });
+            if (i > 0)
+                data = message.Text.Substring(i + 1);
+            else
+                data = null;
 
             var mhc = _messageHandlerMap[chatId];
 
@@ -104,14 +110,14 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 {
                     try
                     {
-                        if (handlerData.Metadata.HasParameters)
+                        if (handlerData.Metadata.HasParameters && handlerData.Metadata.ParameterCount > 1)
                         {
                             var paramList = new List<string>(handlerData.Metadata.ParameterCount);
 
                             var lastIndex = 0;
                             var curIndex = 0;
 
-                            while (lastIndex < data.Length)
+                            while (data != null && lastIndex < data.Length)
                             {
                                 if (curIndex + 1 >= handlerData.Metadata.ParameterCount)
                                 {
@@ -131,16 +137,17 @@ namespace GayDetectorBot.Telegram.MessageHandling
                             /*
                             for (int i = 0; i < handlerData.Metadata.ParameterCount; i++)
                             {
-                                
+
                             }*/
                             // var arr = data.Split(' ');
                             //if (arr.Length != handlerData.Metadata.ParameterCount)
                             //    Console.WriteLine("!! WARNING: Required parameter count and actual parameter count do not match");
                             await handlerData.Handler.HandleAsync(message, paramList.ToArray());
+
                         }
                         else
                         {
-                            await handlerData.Handler.HandleAsync(message, data.Trim()); 
+                            await handlerData.Handler.HandleAsync(message, data?.Trim() ?? null);
                         }
                     }
                     catch (TelegramCommandException e)
@@ -150,9 +157,10 @@ namespace GayDetectorBot.Telegram.MessageHandling
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
-                        await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message, ParseMode.Markdown);
+                        await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message,
+                            ParseMode.Markdown);
                     }
-                    
+
                     return;
                 }
             }

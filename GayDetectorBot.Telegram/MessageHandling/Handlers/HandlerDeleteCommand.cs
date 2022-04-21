@@ -17,14 +17,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             var chatId = message.Chat.Id;
 
-            var data = message.Text.Split(' ');
+            var data = parsedData;
 
-            if (data.Length < 2)
+            if (data.Length < 1)
             {
                 throw Error("Мало данных! Нужен один параметр!");
             }
 
-            var prefix = data[1];
+            var prefix = data[0];
 
             if (!await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {

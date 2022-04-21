@@ -24,7 +24,10 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             foreach (var p in pList)
             {
-                listStr += $" - @{p.Username}\n";
+                listStr += $" - @{p.Username}";
+                if (p.IsRemoved)
+                    listStr += " - решил уйти от обязательств";
+                listStr += "\n";
             }
 
             await SendTextAsync("Участники:\n\n" + listStr);

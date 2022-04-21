@@ -1,7 +1,10 @@
 {
   "profiles": {
     "GayDetectorBot.Telegram": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "ENVIRONMENT": "Dev"
+      }
     },
     "Docker": {
       "commandName": "Docker"

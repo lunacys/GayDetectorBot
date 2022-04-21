@@ -15,13 +15,13 @@ public class HandlerEval : HandlerBase
 
     public override async Task HandleAsync(Message message, params string[] parsedData)
     {
-        var data = message.Text?.Split(" ");
+        var data = parsedData;
         var chatId = message.Chat.Id;
 
         //if (jsConsole.LogAction == null)
         //    jsConsole.LogAction = (o) => client.SendTextMessageAsync(chatId, "LOG: " + o);
 
-        if (data == null || data.Length < 2)
+        if (data == null || data.Length < 1)
         {
             throw Error("Нет скрипта");
         }
@@ -32,12 +32,7 @@ public class HandlerEval : HandlerBase
             options.LimitRecursion(32);
         });
 
-        var code = "";
-
-        for (int i = 1; i < data.Length; i++)
-        {
-            code += data[i] + " ";
-        }
+        var code = parsedData[0];
 
         code = code.Trim().Replace("```", "");
         if (code.StartsWith("`"))
