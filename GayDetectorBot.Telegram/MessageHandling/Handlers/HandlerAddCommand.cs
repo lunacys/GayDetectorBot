@@ -6,24 +6,22 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("добавить-команду", "добавить кастомную команду", "название-команды", "текстовое содержание")]
-    public class HandlerAddCommand : HandlerBase
+    public class HandlerAddCommand : HandlerBase<string, string>
     {
         public HandlerAddCommand(RepositoryContainer repositoryContainer)
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, params string[] parsedData)
+        public override async Task HandleAsync(Message message, string? prefix, string? content)
         {
             var chatId = message.Chat.Id;
 
 
-            if (parsedData == null || parsedData.Length < 2)
+            if (prefix == null || content == null)
             {
                 throw Error("Мало данных! Надо два параметра!");
             }
-
-            var prefix = parsedData[0];
-
+            
             if (!prefix.StartsWith('!'))
             {
                 throw Error("Команды должны начинаться со знака `!`");
@@ -33,8 +31,6 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             {
                 throw Error("Такая команда уже занята ботом, извини");
             }
-
-            var content = parsedData[1];
 
             if (await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {

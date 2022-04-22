@@ -33,3 +33,35 @@ public abstract class HandlerBase : IMessageHandler
         throw Error(message);
     }
 }
+
+public abstract class HandlerBase<T> : HandlerBase
+{
+    protected HandlerBase(RepositoryContainer repositoryContainer)
+        : base(repositoryContainer)
+    { }
+
+    public abstract Task HandleAsync(Message message, string? arg);
+
+    public override Task HandleAsync(Message message, params string[] parsedData)
+    {
+        var arg1 = parsedData.Length > 0 ? parsedData[0] : null;
+        return HandleAsync(message, arg1);
+    }
+}
+
+public abstract class HandlerBase<T1, T2> : HandlerBase
+{
+    protected HandlerBase(RepositoryContainer repositoryContainer)
+        : base(repositoryContainer)
+    { }
+
+    public abstract Task HandleAsync(Message message, string? arg1, string? arg2);
+
+    public override Task HandleAsync(Message message, params string[] parsedData)
+    {
+        var arg1 = parsedData.Length > 0 ? parsedData[0] : null;
+        var arg2 = parsedData.Length > 1 ? parsedData[1] : null;
+
+        return HandleAsync(message, arg1, arg2);
+    }
+}

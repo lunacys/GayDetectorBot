@@ -5,26 +5,19 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("удалить-команду", "удалить кастомную команду", "название-команды")]
-    public class HandlerDeleteCommand : HandlerBase
+    public class HandlerDeleteCommand : HandlerBase<string>
     {
         public HandlerDeleteCommand(RepositoryContainer repositoryContainer)
             : base(repositoryContainer) { }
 
-        public override async Task HandleAsync(Message message, params string[] parsedData)
+        public override async Task HandleAsync(Message message, string? prefix)
         {
-            if (message.Text == null)
-                return;
-
             var chatId = message.Chat.Id;
 
-            var data = parsedData;
-
-            if (data.Length < 1)
+            if (prefix == null)
             {
                 throw Error("Мало данных! Нужен один параметр!");
             }
-
-            var prefix = data[0];
 
             if (!await RepositoryContainer.Command.CommandExists(prefix, chatId))
             {

@@ -7,21 +7,18 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers;
 
 [MessageHandler("eval", "выполнить скрипт на JavaScript", "скрипт")]
-public class HandlerEval : HandlerBase
+public class HandlerEval : HandlerBase<string>
 {
     public HandlerEval(RepositoryContainer repositoryContainer)
         : base(repositoryContainer)
     { }
 
-    public override async Task HandleAsync(Message message, params string[] parsedData)
+    public override async Task HandleAsync(Message message, string? code)
     {
-        var data = parsedData;
-        var chatId = message.Chat.Id;
-
         //if (jsConsole.LogAction == null)
         //    jsConsole.LogAction = (o) => client.SendTextMessageAsync(chatId, "LOG: " + o);
 
-        if (data == null || data.Length < 1)
+        if (code == null)
         {
             throw Error("Нет скрипта");
         }
@@ -31,8 +28,6 @@ public class HandlerEval : HandlerBase
             options.LimitMemory(4_000_000);
             options.LimitRecursion(32);
         });
-
-        var code = parsedData[0];
 
         code = code.Trim().Replace("```", "");
         if (code.StartsWith("`"))

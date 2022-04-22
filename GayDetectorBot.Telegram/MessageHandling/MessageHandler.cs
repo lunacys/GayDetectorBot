@@ -68,6 +68,9 @@ namespace GayDetectorBot.Telegram.MessageHandling
             if (!message.Text.StartsWith("!"))
                 return;
 
+            if (message.From == null)
+                return;
+
             var chatId = message.Chat.Id;
 
             if (!_messageHandlerMap.ContainsKey(chatId))
@@ -110,6 +113,12 @@ namespace GayDetectorBot.Telegram.MessageHandling
                 {
                     try
                     {
+                        var permissions = handlerData.Metadata.Permission;
+                        var user = await client.GetChatMemberAsync(chatId, message.From.Id);
+
+                        if (!HasPermissions(user.Status, permissions))
+                            throw new TelegramCommandException("А тебе низя такое делать");
+
                         if (handlerData.Metadata.HasParameters && handlerData.Metadata.ParameterCount > 1)
                         {
                             var paramList = new List<string>(handlerData.Metadata.ParameterCount);
@@ -133,15 +142,7 @@ namespace GayDetectorBot.Telegram.MessageHandling
                                     curIndex++;
                                 }
                             }
-
-                            /*
-                            for (int i = 0; i < handlerData.Metadata.ParameterCount; i++)
-                            {
-
-                            }*/
-                            // var arr = data.Split(' ');
-                            //if (arr.Length != handlerData.Metadata.ParameterCount)
-                            //    Console.WriteLine("!! WARNING: Required parameter count and actual parameter count do not match");
+                            
                             await handlerData.Handler.HandleAsync(message, paramList.ToArray());
 
                         }
@@ -207,6 +208,27 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
                 if (attr.Length > 0)
                     yield return (type, attr[0] as MessageHandlerAttribute)!;
+            }
+        }
+
+        private static bool HasPermissions(ChatMemberStatus status, MemberStatusPermission permissions)
+        {
+            switch (status)
+            {
+                case ChatMemberStatus.Creator:
+                    return permissions.HasFlag(MemberStatusPermission.Creator);
+                case ChatMemberStatus.Administrator:
+                    return permissions.HasFlag(MemberStatusPermission.Administrator);
+                case ChatMemberStatus.Member:
+                    return permissions.HasFlag(MemberStatusPermission.Member);
+                case ChatMemberStatus.Left:
+                    return permissions.HasFlag(MemberStatusPermission.Left);
+                case ChatMemberStatus.Kicked:
+                    return permissions.HasFlag(MemberStatusPermission.Kicked);
+                case ChatMemberStatus.Restricted:
+                    return permissions.HasFlag(MemberStatusPermission.Restricted);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(status), status, null);
             }
         }
 

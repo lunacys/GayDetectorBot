@@ -1,7 +1,4 @@
-﻿using GayDetectorBot.Telegram.Data.Repos;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot.Types;
 
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
@@ -28,22 +25,22 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
                 var data = gays.GroupBy(gay => gay.Participant.Username).Select(gr => gr.Key).ToList();
 
-                var map = new Dictionary<string, (int, bool, string)>();
+                var map = new Dictionary<string, (int timesGay, bool isRemoved)>();
 
                 foreach (var username in data)
                 {
                     var count = gays.Count(gay => gay.Participant.Username == username);
 
-                    map[username] = (count, gays.Find(gay => gay.Participant.Username == username)?.Participant?.IsRemoved ?? false, username);
+                    map[username] = (count, gays.Find(gay => gay.Participant.Username == username)?.Participant?.IsRemoved ?? false);
                 }
 
                 var mapSorted = map.ToList();
 
                 mapSorted.Sort((p1, p2) =>
                 {
-                    if (p1.Value.Item1 > p2.Value.Item1)
+                    if (p1.Value.timesGay > p2.Value.timesGay)
                         return -1;
-                    if (p1.Value.Item1 < p2.Value.Item1)
+                    if (p1.Value.timesGay < p2.Value.timesGay)
                         return 1;
                     return 0;
                 });
@@ -52,15 +49,15 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 {
                     //var lastTime
 
-                    msg += $" > {i + 1}) @{mapSorted[i].Key} - {mapSorted[i].Value.Item1}";
+                    msg += $" > {i + 1}) @{mapSorted[i].Key} - {mapSorted[i].Value.timesGay}";
 
-                    if (mapSorted[i].Value.Item2)
+                    if (mapSorted[i].Value.isRemoved)
                         msg += " - решил уйти от обязательств";
 
                     msg += "\n";
                 }
 
-                await SendTextAsync(msg, ParseMode.Markdown);
+                await SendTextAsync(msg);
             }
         }
     }

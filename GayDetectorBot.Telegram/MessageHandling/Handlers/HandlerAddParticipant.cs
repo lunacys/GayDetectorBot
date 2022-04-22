@@ -6,19 +6,17 @@ using Telegram.Bot.Types.Enums;
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
     [MessageHandler("добавить", "добавить пользователя в список рулетки с ссылкой на него", "@тег_пользователя")]
-    public class HandlerAddParticipant : HandlerBase
+    public class HandlerAddParticipant : HandlerBase<string>
     {
         public HandlerAddParticipant(RepositoryContainer repositoryContainer)
             : base(repositoryContainer)
         { }
 
-        public override async Task HandleAsync(Message message, params string[] parsedData)
+        public override async Task HandleAsync(Message message, string? userRaw)
         {
-            var data = parsedData;
-
             var chatId = message.Chat.Id;
 
-            if (data == null || data.Length < 1)
+            if (userRaw == null)
             {
                 throw Error("Укажи пользователя, дурачок");
             }
@@ -35,8 +33,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             {
                 throw Error("А тебе низя такое делать!");
             }
-
-            var userRaw = data[0];
+            
             if (string.IsNullOrEmpty(userRaw))
             {
                 throw Error("Укажи пользователя, дурачок");
@@ -54,7 +51,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             }
             else
             {
-                throw Error($"Какой-то неправильный пользователь `{parsedData[0]}`");
+                throw Error($"Какой-то неправильный пользователь `{userRaw}`");
             }
 
             if (await RepositoryContainer.Participant.IsStartedForUser(username, chatId))
