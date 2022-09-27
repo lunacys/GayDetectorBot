@@ -1,9 +1,13 @@
 ﻿INSERT INTO Participants (
 	ChatId,
 	Username,
-	StartedAt
+	StartedAt,
+	FirstName,
+	LastName
 ) VALUES (
 	$ChatId,
 	$Username,
-	$StartedAt
+	$StartedAt,
+	$FirstName,
+	$LastName
 );

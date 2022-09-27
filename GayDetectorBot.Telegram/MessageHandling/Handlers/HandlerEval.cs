@@ -27,6 +27,7 @@ public class HandlerEval : HandlerBase<string>
         {
             options.LimitMemory(4_000_000);
             options.LimitRecursion(32);
+            options.TimeoutInterval(TimeSpan.FromSeconds(5));
         });
 
         code = code.Trim().Replace("```", "");
@@ -35,24 +36,27 @@ public class HandlerEval : HandlerBase<string>
         if (code.EndsWith("`"))
             code = code.Remove(code.Length - 1, 1);
 
-        try
+        await Task.Run(async () =>
         {
-            var result = engine.Evaluate(code);
-            if (result != null)
-                await SendTextAsync("Результат:\n```\n" + result + "\n```", ParseMode.Markdown);
-        }
-        catch (JavaScriptException e)
-        {
-            Console.WriteLine(e);
-            await SendTextAsync("Ошибка выполнения скрипта:\n" + e.Message);
-            return;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            await SendTextAsync("Непредвиденная ошибка:\n" + e.Message);
-            return;
-        }
+            try
+            {
+                var result = engine.Evaluate(code);
+                if (result != null)
+                    await SendTextAsync("Результат:\n```\n" + result + "\n```", ParseMode.Markdown);
+            }
+            catch (JavaScriptException e)
+            {
+                Console.WriteLine(e);
+                await SendTextAsync("Ошибка выполнения скрипта:\n" + e.Message);
+                return;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendTextAsync("Непредвиденная ошибка:\n" + e.Message);
+                return;
+            }
+        });
     }
 
     class JsConsole

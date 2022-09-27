@@ -3,7 +3,7 @@
     "GayDetectorBot.Telegram": {
       "commandName": "Project",
       "environmentVariables": {
-        "ENVIRONMENT": "Dev"
+        "ENVIRONMENT": "Production"
       }
     },
     "Docker": {

@@ -25,7 +25,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             }
             else
             {
-                await RepositoryContainer.Participant.AddUser(from.Username, chatId);
+                await RepositoryContainer.Participant.AddUser(from.Username, chatId, from.FirstName, from.LastName);
 
                 await SendTextAsync($"Поздравляю, ты в деле, @{from.Username}!");
             }

@@ -11,7 +11,9 @@ CREATE TABLE Participants (
 	ChatId INTEGER NOT NULL,
 	Username TEXT NOT NULL,
 	StartedAt INTEGER NOT NULL,
-	IsRemoved INTEGER
+	IsRemoved INTEGER,
+	FirstName TEXT,
+	LastName TEXT
 );
 
 CREATE TABLE ChatInternal (

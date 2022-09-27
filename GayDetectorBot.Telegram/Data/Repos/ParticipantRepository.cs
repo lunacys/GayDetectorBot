@@ -34,7 +34,7 @@ namespace GayDetectorBot.Telegram.Data.Repos
             return commandId.HasValue;
         }
 
-        public async Task AddUser(string username, long chatId)
+        public async Task AddUser(string username, long chatId, string? firstName, string? lastName)
         {
             await using var conn = _context.CreateConnection();
             await conn.OpenAsync();
@@ -44,6 +44,8 @@ namespace GayDetectorBot.Telegram.Data.Repos
             cmd.Parameters.AddWithValue("$ChatId", chatId);
             cmd.Parameters.AddWithValue("$Username", username);
             cmd.Parameters.AddWithValue("$StartedAt", DateTimeOffset.Now.ToUnixTimeSeconds());
+            cmd.Parameters.AddWithValue("$FirstName", firstName);
+            cmd.Parameters.AddWithValue("$LastName", lastName);
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {

@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
@@ -47,17 +48,19 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
                 for (int i = 0; i < mapSorted.Count; i++)
                 {
+                    //await SendTextAsync($" > {i + 1}) {mapSorted[i].Key} - {mapSorted[i].Value.timesGay}", ParseMode.Markdown);
+
                     //var lastTime
+                    msg += $"> {i + 1}) {mapSorted[i].Key.Trim().Replace('_', ' ')} - {mapSorted[i].Value.timesGay}";
+                    //msg += $" > {i + 1}) {mapSorted[i].Key} - {mapSorted[i].Value.timesGay}";
 
-                    msg += $" > {i + 1}) @{mapSorted[i].Key} - {mapSorted[i].Value.timesGay}";
-
-                    if (mapSorted[i].Value.isRemoved)
-                        msg += " - решил уйти от обязательств";
+                    //if (mapSorted[i].Value.isRemoved)
+                    //    msg += " - решил уйти от обязательств";
 
                     msg += "\n";
                 }
 
-                await SendTextAsync(msg);
+                await SendTextAsync(msg, ParseMode.Markdown);
             }
         }
     }
