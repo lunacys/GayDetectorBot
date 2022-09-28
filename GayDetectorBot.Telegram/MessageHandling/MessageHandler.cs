@@ -179,7 +179,20 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
                     if (c.ToLower() != "@gamee")
                         c = c.Replace("@", "");
-                    await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Markdown, replyToMessageId: message.MessageId);
+
+                    if (c.StartsWith("!eval "))
+                    {
+                        var evalContent = c.Replace("!eval ", "");
+                        var res = await JsEvaluator.EvaluateAsync(evalContent);
+
+                        await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", ParseMode.Markdown,
+                            replyToMessageId: message.MessageId);
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Markdown,
+                            replyToMessageId: message.MessageId);
+                    }
                 }
             }
         }
