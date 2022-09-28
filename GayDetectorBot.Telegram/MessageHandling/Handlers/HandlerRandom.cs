@@ -25,7 +25,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             var i = rnd.Next(map.Count);
 
             var msg = map[i].Content;
-            await SendTextAsync(msg);
+            await SendTextAsync(msg, message.MessageId);
         }
     }
 }

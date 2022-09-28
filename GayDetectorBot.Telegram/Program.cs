@@ -114,7 +114,7 @@ namespace GayDetectorBot.Telegram
             var from = update.Message.From;
 
             Console.WriteLine($"Received a '{text}' message in chat {chatId} from {from?.FirstName} {from?.LastName} @{from?.Username}");
-
+            
             await _messageHandler.Message(update.Message, client);
         }
     }

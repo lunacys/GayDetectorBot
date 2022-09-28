@@ -54,7 +54,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     Content = content
                 });
 
-                await SendTextAsync($"Команда `{prefix}` добавлена успешно");
+                await SendTextAsync($"Команда `{prefix}` добавлена успешно", message.MessageId);
             }
         }
     }

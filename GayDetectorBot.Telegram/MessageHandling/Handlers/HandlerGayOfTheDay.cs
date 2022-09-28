@@ -21,13 +21,13 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (await RepositoryContainer.Participant.IsStartedForUser(from.Username, chatId))
             {
-                await SendTextAsync($"Ты итак в деле, @{from.Username}");
+                await SendTextAsync($"Ты итак в деле, @{from.Username}", message.MessageId);
             }
             else
             {
                 await RepositoryContainer.Participant.AddUser(from.Username, chatId, from.FirstName, from.LastName);
 
-                await SendTextAsync($"Поздравляю, ты в деле, @{from.Username}!");
+                await SendTextAsync($"Поздравляю, ты в деле, @{from.Username}!", message.MessageId);
             }
         }
     }

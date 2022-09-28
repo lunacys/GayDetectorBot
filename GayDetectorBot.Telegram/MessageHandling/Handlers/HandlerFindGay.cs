@@ -80,7 +80,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     var delta = nextDate - today;
 
                     await SendTextAsync($"Сегодня пидор @{gayToday}\n" +
-                                                              $"Следующее обновление через {delta.Hours}:{delta.Minutes.ToString().PadLeft(2, '0')}");
+                                                              $"Следующее обновление через {delta.Hours}:{delta.Minutes.ToString().PadLeft(2, '0')}", message.MessageId);
                     return;
                 }
                 else
@@ -93,7 +93,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             var secondMsg = GetRandomPhrase(1);
             var thirdMsg = GetRandomPhrase(2);
 
-            await SendTextAsync(firstMsg);
+            await SendTextAsync(firstMsg, null);
 
             var pList = (await RepositoryContainer.Participant.RetrieveParticipants(chatId)).Where(p => !p.IsRemoved).ToList();
 
@@ -115,14 +115,14 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             await RepositoryContainer.Gay.AddGay(p);
 
             await Task.Delay(1000);
-            await SendTextAsync(secondMsg);
+            await SendTextAsync(secondMsg, null);
             await Task.Delay(1000);
-            await SendTextAsync(thirdMsg);
+            await SendTextAsync(thirdMsg, null);
             await Task.Delay(1000);
 
             var resI = _random.Next(0, _youGayPhrases.Length);
 
-            await SendTextAsync($"{_youGayPhrases[resI]}@{p.Username}");
+            await SendTextAsync($"{_youGayPhrases[resI]}@{p.Username}", null);
         }
 
         private string GetRandomPhrase(int index)

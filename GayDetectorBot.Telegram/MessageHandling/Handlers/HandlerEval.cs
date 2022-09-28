@@ -23,40 +23,28 @@ public class HandlerEval : HandlerBase<string>
             throw Error("Нет скрипта");
         }
 
-        var engine = new Engine(options =>
+        try
         {
-            options.LimitMemory(4_000_000);
-            options.LimitRecursion(32);
-            options.TimeoutInterval(TimeSpan.FromSeconds(5));
-        });
+            var result = await JsEvaluator.EvaluateAsync(code);
 
-        code = code.Trim().Replace("```", "");
-        if (code.StartsWith("`"))
-            code = code.Remove(0, 1);
-        if (code.EndsWith("`"))
-            code = code.Remove(code.Length - 1, 1);
-
-        await Task.Run(async () =>
+            if (result != null)
+                await SendTextAsync("Результат:\n```\n" + result + "\n```", message.MessageId);
+        }
+        catch (JavaScriptException e)
         {
-            try
-            {
-                var result = engine.Evaluate(code);
-                if (result != null)
-                    await SendTextAsync("Результат:\n```\n" + result + "\n```", ParseMode.Markdown);
-            }
-            catch (JavaScriptException e)
-            {
-                Console.WriteLine(e);
-                await SendTextAsync("Ошибка выполнения скрипта:\n" + e.Message);
-                return;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                await SendTextAsync("Непредвиденная ошибка:\n" + e.Message);
-                return;
-            }
-        });
+            Console.WriteLine(e);
+            await SendTextAsync("Ошибка выполнения скрипта:\n" + e.Message, message.MessageId);
+        }
+        catch (TimeoutException e)
+        {
+            Console.WriteLine(e);
+            await SendTextAsync("Словил таймаут, скрипт выполнялся слишком долго", message.MessageId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            await SendTextAsync("Непредвиденная ошибка:\n" + e.Message, message.MessageId);
+        }
     }
 
     class JsConsole

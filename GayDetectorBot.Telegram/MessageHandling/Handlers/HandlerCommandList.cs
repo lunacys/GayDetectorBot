@@ -18,7 +18,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (map.Count == 0)
             {
-                await SendTextAsync("Список команд пуст");
+                await SendTextAsync("Список команд пуст", message.MessageId);
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 msg += $" - `{pc.Prefix}`\n";
             }
 
-            await SendTextAsync(msg, ParseMode.Markdown);
+            await SendTextAsync(msg, message.MessageId);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 throw Error($"Неизвестный пользователь");
             }
             
-            await SendTextAsync($"Ну ты и пидор, @{message.From.Username}. Убрал тебя.");
+            await SendTextAsync($"Ну ты и пидор, @{message.From.Username}. Убрал тебя.", message.MessageId);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             await RepositoryContainer.Command.DeleteCommand(prefix, chatId);
             RepositoryContainer.CommandMap[chatId]?.RemoveAll(pc => pc.Prefix == prefix);
 
-            await SendTextAsync($"Команда `{prefix}` успешно удалена");
+            await SendTextAsync($"Команда `{prefix}` успешно удалена", message.MessageId);
         }
     }
 }

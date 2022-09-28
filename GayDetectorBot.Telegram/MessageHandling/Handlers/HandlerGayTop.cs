@@ -18,7 +18,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 
             if (gays.Count == 0)
             {
-                await SendTextAsync("Это удивительно, но пидоров на этом сервере нет");
+                await SendTextAsync("Это удивительно, но пидоров на этом сервере нет", message.MessageId);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     msg += "\n";
                 }
 
-                await SendTextAsync(msg, ParseMode.Markdown);
+                await SendTextAsync(msg, message.MessageId);
             }
         }
     }

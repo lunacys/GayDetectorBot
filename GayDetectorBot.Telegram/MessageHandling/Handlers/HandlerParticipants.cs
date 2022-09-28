@@ -30,7 +30,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                 listStr += "\n";
             }
 
-            await SendTextAsync("Участники:\n\n" + listStr);
+            await SendTextAsync("Участники:\n\n" + listStr, message.MessageId);
         }
     }
 }

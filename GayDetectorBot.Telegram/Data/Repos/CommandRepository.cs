@@ -81,6 +81,35 @@ namespace GayDetectorBot.Telegram.Data.Repos
             return commands;
         }
 
+        public async Task<CustomCommand> RetrieveByPrefix(string prefix, long chatId)
+        {
+            await using var conn = _context.CreateConnection();
+            await conn.OpenAsync();
+
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = SqlReader.Load("Command$RetrieveByPrefix");
+
+            cmd.Parameters.AddWithValue("$ChatId", chatId);
+            cmd.Parameters.AddWithValue("$Prefix", prefix);
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            var cmdId = reader.GetInt32(0);
+            var chId = reader.GetInt64(1);
+            var userAddedName = reader.GetString(2);
+            var p = reader.GetString(3);
+            var content = reader.GetString(4);
+
+            return new CustomCommand
+            {
+                CommandId = cmdId,
+                ChatId = chId,
+                UserAddedName = userAddedName,
+                CommandPrefix = p,
+                CommandContent = content
+            };
+        }
+
         public async Task AddCommand(long chatId, string username, string prefix, string content)
         {
             await using var conn = _context.CreateConnection();

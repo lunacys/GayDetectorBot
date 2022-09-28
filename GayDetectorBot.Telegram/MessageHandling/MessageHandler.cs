@@ -144,7 +144,6 @@ namespace GayDetectorBot.Telegram.MessageHandling
                             }
                             
                             await handlerData.Handler.HandleAsync(message, paramList.ToArray());
-
                         }
                         else
                         {
@@ -153,13 +152,13 @@ namespace GayDetectorBot.Telegram.MessageHandling
                     }
                     catch (TelegramCommandException e)
                     {
-                        await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown);
+                        await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown, replyToMessageId: message.MessageId);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
                         await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message,
-                            ParseMode.Markdown);
+                            ParseMode.Markdown, replyToMessageId: message.MessageId);
                     }
 
                     return;
@@ -180,7 +179,7 @@ namespace GayDetectorBot.Telegram.MessageHandling
 
                     if (c.ToLower() != "@gamee")
                         c = c.Replace("@", "");
-                    await client.SendTextMessageAsync(message.Chat.Id, c);
+                    await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Markdown, replyToMessageId: message.MessageId);
                 }
             }
         }
