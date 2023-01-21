@@ -5,7 +5,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
-    [MessageHandler("добавить-команду", "добавить кастомную команду", "название-команды", "текстовое содержание")]
+    [MessageHandler("добавить-команду", "добавить кастомную команду", MemberStatusPermission.All, "название-команды", "текстовое содержание")]
     public class HandlerAddCommand : HandlerBase<string, string>
     {
         public HandlerAddCommand(RepositoryContainer repositoryContainer)
@@ -54,7 +54,7 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
                     Content = content
                 });
 
-                await SendTextAsync($"Команда `{prefix}` добавлена успешно", message.MessageId);
+                await SendTextAsync($"Команда `{prefix}` добавлена успешно", null);
             }
         }
     }

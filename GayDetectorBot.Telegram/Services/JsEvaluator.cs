@@ -1,13 +1,10 @@
-﻿using GayDetectorBot.Telegram.MessageHandling;
-using Jint;
-using Jint.Runtime;
-using Telegram.Bot.Types.Enums;
+﻿using Jint;
 
-namespace GayDetectorBot.Telegram;
+namespace GayDetectorBot.Telegram.Services;
 
 public static class JsEvaluator
 {
-    public static Task<string?> EvaluateAsync(string code)
+    public static Task<string?> EvaluateAsync(string code, Action<Engine> setupFunc)
     {
         return Task.Run(() =>
         {
@@ -18,13 +15,26 @@ public static class JsEvaluator
                 options.TimeoutInterval(TimeSpan.FromSeconds(5));
             });
 
+            setupFunc(engine);
+
             code = code.Trim().Replace("```", "");
             if (code.StartsWith("`"))
                 code = code.Remove(0, 1);
             if (code.EndsWith("`"))
                 code = code.Remove(code.Length - 1, 1);
+
+            Jint.Native.JsValue result;
+
+            try
+            {
+                result = engine.Evaluate(code);
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+
             
-            var result = engine.Evaluate(code);
             return result?.ToString() ?? null;
         });
     }

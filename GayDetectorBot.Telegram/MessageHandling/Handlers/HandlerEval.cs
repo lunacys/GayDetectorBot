@@ -1,4 +1,5 @@
-﻿using Jint;
+﻿using GayDetectorBot.Telegram.Services;
+using Jint;
 using Jint.Runtime;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -25,7 +26,16 @@ public class HandlerEval : HandlerBase<string>
 
         try
         {
-            var result = await JsEvaluator.EvaluateAsync(code);
+            var result = await JsEvaluator.EvaluateAsync(code, engine =>
+            {
+                engine.SetValue("SendCommand", async (string command) =>
+                    {
+                        var cmd = RepositoryContainer.CommandMap[ChatId].Find(content => content.Prefix == command);
+                        if (cmd != null)
+                            await SendTextAsync(cmd.Content, null, ParseMode.Html);
+                    }
+                );
+            });
 
             if (result != null)
                 await SendTextAsync("Результат:\n```\n" + result + "\n```", message.MessageId);

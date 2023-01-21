@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
@@ -24,8 +25,8 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             var rnd = new Random();
             var i = rnd.Next(map.Count);
 
-            var msg = map[i].Content;
-            await SendTextAsync(msg, message.MessageId);
+            var msg = map[i];
+            await SendTextAsync(msg.Content, message.MessageId, ParseMode.Html);
         }
     }
 }

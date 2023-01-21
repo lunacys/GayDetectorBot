@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using GayDetectorBot.Telegram.Data.Repos;
+using GayDetectorBot.Telegram.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -116,6 +117,8 @@ namespace GayDetectorBot.Telegram.MessageHandling
                         var permissions = handlerData.Metadata.Permission;
                         var user = await client.GetChatMemberAsync(chatId, message.From.Id);
 
+                        Console.WriteLine("PERMS: " + user.Status);
+
                         if (!HasPermissions(user.Status, permissions))
                             throw new TelegramCommandException("А тебе низя такое делать");
 
@@ -152,13 +155,13 @@ namespace GayDetectorBot.Telegram.MessageHandling
                     }
                     catch (TelegramCommandException e)
                     {
-                        await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown, replyToMessageId: message.MessageId);
+                        await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
                         await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message,
-                            ParseMode.Markdown, replyToMessageId: message.MessageId);
+                            ParseMode.Markdown);
                     }
 
                     return;
@@ -183,14 +186,23 @@ namespace GayDetectorBot.Telegram.MessageHandling
                     if (c.StartsWith("!eval "))
                     {
                         var evalContent = c.Replace("!eval ", "");
-                        var res = await JsEvaluator.EvaluateAsync(evalContent);
+                        var res = await JsEvaluator.EvaluateAsync(evalContent, engine =>
+                        {
+                            engine.SetValue("SendCommand", async (string snd) =>
+                                {
+                                    var cmd = _commandMap[message.Chat.Id].Find(co => co.Prefix == snd);
+                                    if (cmd != null)
+                                        await client.SendTextMessageAsync(chatId, cmd.Content, ParseMode.Html);
+                                }
+                            );
+                        });
 
-                        await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", ParseMode.Markdown,
+                        await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", ParseMode.Html,
                             replyToMessageId: message.MessageId);
                     }
                     else
                     {
-                        await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Markdown,
+                        await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Html,
                             replyToMessageId: message.MessageId);
                     }
                 }

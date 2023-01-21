@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.Telegram.MessageHandling.Handlers
 {
-    [MessageHandler("удалить-команду", "удалить кастомную команду", "название-команды")]
+    [MessageHandler("удалить-команду", MemberStatusPermission.All, "удалить кастомную команду", "название-команды")]
     public class HandlerDeleteCommand : HandlerBase<string>
     {
         public HandlerDeleteCommand(RepositoryContainer repositoryContainer)
@@ -23,6 +23,9 @@ namespace GayDetectorBot.Telegram.MessageHandling.Handlers
             {
                 throw Error($"Команды `{prefix}` не существует");
             }
+
+            if (prefix.Trim().ToLower() == "!вера")
+                throw Error("Как ты смеешь???");
 
             await RepositoryContainer.Command.DeleteCommand(prefix, chatId);
             RepositoryContainer.CommandMap[chatId]?.RemoveAll(pc => pc.Prefix == prefix);
