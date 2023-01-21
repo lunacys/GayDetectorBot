@@ -1,10 +1,11 @@
 ﻿using GayDetectorBot.Telegram.Data;
 using GayDetectorBot.Telegram.Data.Repos;
 using GayDetectorBot.Telegram.MessageHandling;
+using GayDetectorBot.Telegram.Services;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
-using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -86,6 +87,8 @@ namespace GayDetectorBot.Telegram
 
             var me = await _telegramClient.GetMeAsync();
             Console.WriteLine($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
+
+            Scheduler.Initialize();
         }
 
         private Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken token)
