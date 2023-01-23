@@ -1,4 +1,6 @@
 
+using GayDetectorBot.WebApi.Configuration;
+using GayDetectorBot.WebApi.Data;
 using Microsoft.Extensions.Options;
 
 namespace GayDetectorBot.WebApi
@@ -25,12 +27,11 @@ namespace GayDetectorBot.WebApi
 
             try
             {
-                // TODO: Add DB initialization
-                //var context = services.GetRequiredService<QuaderMainContext>();
-                //await context.Database.EnsureCreatedAsync();
+                var context = services.GetRequiredService<GayDetectorBotContext>();
+                await context.Database.EnsureCreatedAsync();
 
-                //var settings = services.GetRequiredService<IOptions<AppSettings>>();
-                //DbInitializer.Initialize(context, settings.Value);
+                var settings = services.GetRequiredService<IOptions<AppSettings>>();
+                DbInitializer.Initialize(context, settings.Value);
             }
             catch (Exception e)
             {

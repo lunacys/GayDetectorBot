@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GayDetectorBot.WebApi.Configuration;
+using GayDetectorBot.WebApi.Data;
+using GayDetectorBot.WebApi.Services.Auth;
+using GayDetectorBot.WebApi.Services.UserManagement;
 
 namespace GayDetectorBot.WebApi;
 
@@ -19,19 +23,31 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        //var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
-        //services.AddDbContext<QuaderMainContext>(builder => builder.UseNpgsql(dbConnectionString));
+        var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
+        var sqliteConnectionString = Configuration.GetConnectionString("SqliteConnection");
 
-        //var appSettingsSection = Configuration.GetSection("AppSettings");
-        //services.Configure<AppSettings>(appSettingsSection);
-
-        //var key = Encoding.ASCII.GetBytes(appSettingsSection.GetValue<string>("Secret"));
-
-        /*services.AddAuthentication(options =>
+        /*if (!string.IsNullOrEmpty(sqliteConnectionString))
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
+            services.AddDbContext<GayDetectorBotContext>(builder => builder.UseSqlite(sqliteConnectionString));
+        }
+        else*/
+        {
+            services.AddDbContext<GayDetectorBotContext>(builder => builder.UseNpgsql(dbConnectionString));
+        }
+
+        var appSettingsSection = Configuration.GetSection("AppSettings");
+        services.Configure<AppSettings>(appSettingsSection);
+
+        var tgSection = Configuration.GetSection("Telegram");
+        services.Configure<TelegramOptions>(tgSection);
+
+        var key = Encoding.ASCII.GetBytes(appSettingsSection.GetValue<string>("Secret")!);
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(opt =>
             {
                 opt.TokenValidationParameters = new TokenValidationParameters
@@ -42,26 +58,9 @@ public class Startup
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero,
                     ValidIssuer = AppVersionInfo.AppName + " " + AppVersionInfo.BuildVersion,
-                    ValidAudience = "Quader"
+                    ValidAudience = "GayDetectorBot"
                 };
-
-                opt.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Query["access_token"];
-
-                        var path = context.HttpContext.Request.Path;
-                        // Allow SignalR access
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/ws/testHub"))
-                        {
-                            context.Token = accessToken;
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            });*/
+            });
 
         services.AddLogging(builder =>
         {
@@ -75,7 +74,9 @@ public class Startup
             });
         });
 
-        //services.AddControllers().AddNewtonsoftJson();
+        services.AddControllers();
+        services.AddAuthorization();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
 
@@ -109,10 +110,7 @@ public class Startup
             options.SuppressModelStateInvalidFilter = true;
         });
 
-        /*services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
-        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IAuthService, AuthService>();*/
+        services.ConfigureGayDetector(tgSection.Get<TelegramOptions>()!);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

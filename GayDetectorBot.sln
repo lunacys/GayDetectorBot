@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{B6247BA7-D2F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jint", "3rdParty\jint\Jint\Jint.csproj", "{020CD880-8034-4A3D-A298-3DCCCA1B8922}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GayDetectorBot.WebApi", "GayDetectorBot.WebApi\GayDetectorBot.WebApi.csproj", "{66B80160-7B46-4444-A24C-F0B311D8A053}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GayDetectorBot.WebApi", "GayDetectorBot.WebApi\GayDetectorBot.WebApi.csproj", "{66B80160-7B46-4444-A24C-F0B311D8A053}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
