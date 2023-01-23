@@ -32,8 +32,13 @@ public class Startup
         }
         else*/
         {
-            services.AddDbContext<GayDetectorBotContext>(builder => builder.UseNpgsql(dbConnectionString));
+            services.AddDbContext<GayDetectorBotContext>(builder =>
+            {
+                builder.UseNpgsql(dbConnectionString);
+            }, ServiceLifetime.Singleton);
         }
+
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         var appSettingsSection = Configuration.GetSection("AppSettings");
         services.Configure<AppSettings>(appSettingsSection);

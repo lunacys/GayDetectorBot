@@ -1,4 +1,5 @@
-﻿using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Data.Repositories;
+using GayDetectorBot.WebApi.Models.Tg;
 
 namespace GayDetectorBot.WebApi.Services.Tg.Helpers;
 
@@ -7,10 +8,11 @@ public class SchedulerService : ISchedulerService
     private Timer _timer = null!;
 
     private readonly SortedList<DateTimeOffset, (SchedulerContext, Func<SchedulerContext, Task>)> _schedules = new ();
+    private readonly IScheduleRepository _scheduleRepository;
 
-    public SchedulerService()
+    public SchedulerService(IScheduleRepository scheduleRepository)
     {
-        Initialize();
+        _scheduleRepository = scheduleRepository;
     }
 
     public void Schedule(TimeSpan timeSpan, SchedulerContext context, Func<SchedulerContext, Task> messageAction)
@@ -22,8 +24,10 @@ public class SchedulerService : ISchedulerService
         _schedules.Add(fireAt, (context, messageAction));
     }
 
-    private void Initialize()
+    public async Task Initialize()
     {
+        var schedules = await _scheduleRepository.RetrieveAll();
+
         _timer = new Timer(async _ =>
         {
             await CheckSchedules();

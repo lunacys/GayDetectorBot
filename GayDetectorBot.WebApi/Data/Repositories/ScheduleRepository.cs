@@ -39,4 +39,9 @@ public class ScheduleRepository : IScheduleRepository
     {
         return await _context.Schedules.Where(s => s.ChatId == chatId).ToListAsync();
     }
+
+    public async Task<IEnumerable<SchedulerContext>> RetrieveAll()
+    {
+        return await _context.Schedules.ToListAsync();
+    }
 }

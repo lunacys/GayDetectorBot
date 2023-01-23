@@ -1,8 +1,13 @@
 ﻿using GayDetectorBot.WebApi.Configuration;
+using GayDetectorBot.WebApi.Data;
 using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Services.Auth;
+using GayDetectorBot.WebApi.Services.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
+using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using GayDetectorBot.WebApi.Services.UserManagement;
+using System.Reflection;
+using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
 
 namespace GayDetectorBot.WebApi;
 
@@ -23,5 +28,50 @@ public static class ServiceConfigurator
 
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddSingleton<IJsEvaluatorService, JsEvaluatorService>();
+
+        services.AddSingleton<IHandlerMetadataContainer, HandlerMetadataContainer>();
+        services.AddSingleton<ICommandMapService, CommandMapService>();
+
+        AddHandlers(services);
+
+        services.AddSingleton<IMessageHandlerService, MessageHandlerService>(provider =>
+        {
+            var logger = provider.GetRequiredService<ILogger<MessageHandlerService>>();
+            var commandMap = provider.GetRequiredService<ICommandMapService>();
+            var hmc = provider.GetRequiredService<IHandlerMetadataContainer>();
+            var js = provider.GetRequiredService<IJsEvaluatorService>();
+
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js);
+        });
+        services.AddSingleton<ITelegramService, TelegramService>();
+    }
+
+    private static void AddHandlers(IServiceCollection services)
+    {
+        services.AddTransient<HandlerAddCommand>();
+        services.AddTransient<HandlerAddParticipant>();
+        services.AddTransient<HandlerCommandList>();
+        services.AddTransient<HandlerDeleteCommand>();
+        services.AddTransient<HandlerEval>();
+        services.AddTransient<HandlerFindGay>();
+        services.AddTransient<HandlerGayOfTheDay>();
+        services.AddTransient<HandlerGayTop>();
+        services.AddTransient<HandlerGetRoles>();
+        services.AddTransient<HandlerParticipants>();
+        services.AddTransient<HandlerRandom>();
+        services.AddTransient<HandlerRemoveMe>();
+        services.AddTransient<HandlerSchedule>();
+        services.AddTransient<HandlerWhoAdded>();
+    }
+
+    private static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)
+    {
+        foreach (var type in assembly.GetTypes())
+        {
+            var attr = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
+
+            if (attr.Length > 0)
+                yield return (type, attr[0] as MessageHandlerAttribute)!;
+        }
     }
 }
