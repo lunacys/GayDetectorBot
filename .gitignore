@@ -10,3 +10,4 @@ obj/
 /GayDetectorBot.WebApi/TgData.db
 /GayDetectorBot.WebApi/TgData.db-shm
 /GayDetectorBot.WebApi/TgData.db-wal
+/GayDetectorBot.WebApi/logs
