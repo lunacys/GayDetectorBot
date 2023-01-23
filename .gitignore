@@ -7,3 +7,6 @@ obj/
 /GayDetectorBot.Telegram/GayDetectorBot.Telegram.csproj.user
 /GayDetectorBot.WebApi/appsettings.Development.json
 /GayDetectorBot.WebApi/appsettings.Production.json
+/GayDetectorBot.WebApi/TgData.db
+/GayDetectorBot.WebApi/TgData.db-shm
+/GayDetectorBot.WebApi/TgData.db-wal
