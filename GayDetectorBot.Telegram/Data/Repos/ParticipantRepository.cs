@@ -108,5 +108,45 @@ namespace GayDetectorBot.Telegram.Data.Repos
 
             return result;
         }
+
+        public async Task<IEnumerable<Participant>> RetrieveAll()
+        {
+            await using var conn = _context.CreateConnection();
+            await conn.OpenAsync();
+
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = SqlReader.Load("Participant$RetrieveAll");
+
+            var result = new List<Participant>();
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (reader.Read())
+                {
+                    var partId = reader.GetInt32(0);
+                    var chId = reader.GetInt64(1);
+                    var username = reader.GetString(2);
+                    var startedAt = reader.GetInt64(3);
+                    bool isRemoved = false;
+                    if (!reader.IsDBNull(4))
+                        isRemoved = reader.GetBoolean(4);
+                    var firstName = reader.IsDBNull(5) ? null : reader.GetString(5);
+                    var lastName = reader.IsDBNull(6) ? null : reader.GetString(6);
+
+                    result.Add(new Participant()
+                    {
+                        ParticipantId = partId,
+                        ChatId = chId,
+                        Username = username,
+                        StartedAt = DateTimeOffset.FromUnixTimeSeconds(startedAt).DateTime,
+                        IsRemoved = isRemoved,
+                        FirstName = firstName,
+                        LastName = lastName,
+                    });
+                }
+            }
+
+            return result;
+        }
     }
 }

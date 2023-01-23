@@ -11,3 +11,5 @@ obj/
 /GayDetectorBot.WebApi/TgData.db-shm
 /GayDetectorBot.WebApi/TgData.db-wal
 /GayDetectorBot.WebApi/logs
+/GayDetectorBot.WebApi/SeedData
+/GayDetectorBot.WebApi/downloads

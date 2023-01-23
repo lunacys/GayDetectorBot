@@ -1,4 +1,6 @@
-﻿namespace GayDetectorBot.Telegram.Data.Repos
+﻿using GayDetectorBot.Telegram.Models;
+
+namespace GayDetectorBot.Telegram.Data.Repos
 {
     public class ChatRepository
     {
@@ -121,6 +123,38 @@
                 while (reader.Read())
                 { }
             }
+        }
+
+        public async Task<IEnumerable<ChatInternal>> RetrieveAll()
+        {
+            await using var conn = _context.CreateConnection();
+            await conn.OpenAsync();
+
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = SqlReader.Load("Chat$RetrieveAll");
+
+            var result = new List<ChatInternal>();
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var chatId = reader.GetInt64(1);
+                    var lastGay = reader.IsDBNull(2) ? null : reader.GetString(2);
+                    long? lastTime = reader.IsDBNull(3) ? null : reader.GetInt64(3);
+
+                    result.Add(new ChatInternal
+                    {
+                        ChatInternalId = id,
+                        ChatId = chatId,
+                        LastGayUsername = lastGay,
+                        LastChecked = lastTime.HasValue ? DateTimeOffset.FromUnixTimeSeconds(lastTime.Value).DateTime : null
+                    });
+                }
+            }
+
+            return result;
         }
     }
 }

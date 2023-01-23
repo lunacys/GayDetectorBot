@@ -7,5 +7,7 @@
         public string Username { get; set; } = null!;
         public DateTime StartedAt { get; set; }
         public bool IsRemoved { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 }

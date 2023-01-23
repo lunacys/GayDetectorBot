@@ -9,6 +9,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
+using File = System.IO.File;
 
 namespace GayDetectorBot.Telegram
 {
@@ -65,11 +66,50 @@ namespace GayDetectorBot.Telegram
             _chatRepository = new ChatRepository(_dataContext);
             _participantRepository = new ParticipantRepository(_dataContext);
 
+            await DumpToFile();
+
             _messageHandler = new MessageHandler(_commandRepository, _gayRepository, _chatRepository, _participantRepository);
             
             await InitTelegram();
 
             await Task.Delay(-1);
+        }
+
+        private async Task DumpToFile()
+        {
+            // Dumping all data to a file
+            var commands = await _commandRepository.RetrieveAllCommands();
+            var gays = await _gayRepository.RetrieveAllGays();
+            var chats = await _chatRepository.RetrieveAll();
+            var participants = await _participantRepository.RetrieveAll();
+
+            var cmdStr = "";
+            foreach (var command in commands)
+            {
+                cmdStr += $"{{{command.CommandId}|{command.ChatId}|{command.UserAddedName}|{command.CommandPrefix}|{command.CommandContent}}}\n";
+            }
+            await File.WriteAllTextAsync("DB_Commands.txt", cmdStr);
+
+            var gayStr = "";
+            foreach (var gay in gays)
+            {
+                gayStr += $"{{{gay.GayId}|{gay.DateTimestamp:yyyy-MM-dd HH:mm:ss.ms}+05|{gay.Participant.ParticipantId}}}\n";
+            }
+            await File.WriteAllTextAsync("DB_Gays.txt", gayStr);
+
+            var chatStr = "";
+            foreach (var chat in chats)
+            {
+                chatStr += $"{{{chat.ChatInternalId}|{chat.ChatId}|{chat.LastGayUsername}|{chat.LastChecked:yyyy-MM-dd HH:mm:ss.ms}+05}}\n";
+            }
+            await File.WriteAllTextAsync("DB_Chats.txt", chatStr);
+
+            var partStr = "";
+            foreach (var part in participants)
+            {
+                partStr += $"{{{part.ParticipantId}|{part.ChatId}|{part.Username}|{part.StartedAt:yyyy-MM-dd HH:mm:ss.ms}+05|{part.IsRemoved}|{part.FirstName}|{part.LastName}}}\n";
+            }
+            await File.WriteAllTextAsync("DB_Participants.txt", partStr);
         }
 
         private async Task InitTelegram()
