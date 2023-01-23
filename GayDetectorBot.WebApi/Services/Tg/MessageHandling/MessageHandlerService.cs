@@ -1,12 +1,15 @@
 ﻿using System.Reflection;
+using GayDetectorBot.WebApi.Configuration;
 using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using File = System.IO.File;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
@@ -20,6 +23,7 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly IServiceProvider _serviceProvider;
     private readonly IHandlerMetadataContainer _handlerMetadataContainer;
     private readonly IJsEvaluatorService _jsEvaluator;
+    private readonly TelegramOptions _options;
 
     private readonly string _helpMessage;
 
@@ -28,22 +32,59 @@ public class MessageHandlerService : IMessageHandlerService
         ICommandMapService commandMap, 
         IHandlerMetadataContainer handlerMetadataContainer, 
         IServiceProvider serviceProvider,
-        IJsEvaluatorService jsEvaluator)
+        IJsEvaluatorService jsEvaluator,
+        IOptions<TelegramOptions> options)
     {
         _logger = logger;
         _commandMap = commandMap;
         _handlerMetadataContainer = handlerMetadataContainer;
         _serviceProvider = serviceProvider;
         _jsEvaluator = jsEvaluator;
+        _options = options.Value;
 
         _handlerTypes = _handlerMetadataContainer.GetHandlerTypes();
 
         _helpMessage = GetHelpMessage();
+
+        Directory.CreateDirectory("downloads");
     }
     
     public async Task Message(Message? message, ITelegramBotClient client)
     {
         if (message == null)
+            return;
+
+        if (message.Type == MessageType.Photo)
+        {
+            //foreach (var photo in message.Photo)
+            {
+                var photo = message.Photo.Last();
+                var fileId = photo.FileId;
+                var fileInfo = await client.GetFileAsync(fileId);
+                var filePath = fileInfo.FilePath;
+                var extension = Path.GetExtension(filePath);
+
+                string dest = "./downloads/" + Utils.GenerateRandomString() + extension;
+
+                Directory.CreateDirectory(Path.GetDirectoryName(dest));
+
+                await using Stream fileStream = File.OpenWrite(dest);
+                await client.DownloadFileAsync(filePath, fileStream);
+            }
+            
+            return;
+        }
+        else if (message.Type == MessageType.Video)
+        {
+
+            return;
+        }
+        else if (message.Type == MessageType.Document)
+        {
+
+            return;
+        }
+        else if (message.Type != MessageType.Text)
             return;
 
         var text = message.Text;
@@ -125,7 +166,7 @@ public class MessageHandlerService : IMessageHandlerService
                     }
                     else
                     {
-                        await Handle(handlerType.Type, chatId, client, message, data?.Trim() ?? null);
+                        await Handle(handlerType.Type, chatId, client, message, data?.Trim() ?? "");
                     }
                 }
                 catch (TelegramCommandException e)

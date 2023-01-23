@@ -64,7 +64,10 @@ public class TelegramService : ITelegramService
         if (update.Type != UpdateType.Message)
             return;
 
-        if (update.Message!.Type != MessageType.Text)
+        //if (update.Message!.Type != MessageType.Text)
+        //    return;
+
+        if (update.Message == null)
             return;
 
         var chatId = update.Message.Chat.Id;

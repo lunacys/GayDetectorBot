@@ -8,6 +8,7 @@ using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using GayDetectorBot.WebApi.Services.UserManagement;
 using System.Reflection;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+using Microsoft.Extensions.Options;
 
 namespace GayDetectorBot.WebApi;
 
@@ -40,8 +41,9 @@ public static class ServiceConfigurator
             var commandMap = provider.GetRequiredService<ICommandMapService>();
             var hmc = provider.GetRequiredService<IHandlerMetadataContainer>();
             var js = provider.GetRequiredService<IJsEvaluatorService>();
+            var tgOpt = provider.GetRequiredService<IOptions<TelegramOptions>>();
 
-            return new MessageHandlerService(logger, commandMap, hmc, provider, js);
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js, tgOpt);
         });
         services.AddSingleton<ITelegramService, TelegramService>();
     }
