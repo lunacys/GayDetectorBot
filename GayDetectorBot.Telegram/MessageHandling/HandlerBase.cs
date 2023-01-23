@@ -40,7 +40,7 @@ public abstract class HandlerBase<T> : HandlerBase
         : base(repositoryContainer)
     { }
 
-    public abstract Task HandleAsync(Message message, string? arg);
+    public abstract Task HandleAsync(Message message, T? arg);
 
     public override Task HandleAsync(Message message, params string[] parsedData)
     {
@@ -55,7 +55,7 @@ public abstract class HandlerBase<T1, T2> : HandlerBase
         : base(repositoryContainer)
     { }
 
-    public abstract Task HandleAsync(Message message, string? arg1, string? arg2);
+    public abstract Task HandleAsync(Message message, T1? arg1, T2? arg2);
 
     public override Task HandleAsync(Message message, params string[] parsedData)
     {

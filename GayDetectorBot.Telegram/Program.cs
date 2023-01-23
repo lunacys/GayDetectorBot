@@ -8,6 +8,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InlineQueryResults;
 
 namespace GayDetectorBot.Telegram
 {
@@ -98,7 +99,7 @@ namespace GayDetectorBot.Telegram
                 ApiRequestException api => $"Telegram API Error:\n{api.ErrorCode}\n{api.Message}",
                 _ => exception.ToString()
             };
-
+            
             Console.WriteLine(errorMessage);
 
             return Task.CompletedTask;
@@ -106,6 +107,11 @@ namespace GayDetectorBot.Telegram
 
         private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken token)
         {
+            if (update.Type == UpdateType.InlineQuery && update.InlineQuery != null)
+            {
+                await InlineQueryHandler(update.InlineQuery, token);
+            }
+
             if (update.Type != UpdateType.Message)
                 return;
 
@@ -119,6 +125,16 @@ namespace GayDetectorBot.Telegram
             Console.WriteLine($"Received a '{text}' message in chat {chatId} from {from?.FirstName} {from?.LastName} @{from?.Username}");
             
             await _messageHandler.Message(update.Message, client);
+        }
+
+        private async Task InlineQueryHandler(InlineQuery inlineQuery, CancellationToken token)
+        {
+            InlineQueryResult[] results =
+            {
+                new InlineQueryResultArticle("1", "a", new InputTextMessageContent("hello"))
+            };
+
+            await _telegramClient.AnswerInlineQueryAsync(inlineQuery.Id, results, 0, true, cancellationToken: token);
         }
     }
 }
