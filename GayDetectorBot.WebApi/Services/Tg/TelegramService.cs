@@ -41,6 +41,11 @@ public class TelegramService : ITelegramService
         _logger.LogInformation($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
     }
 
+    public Task HandleUpdateFromController(Update update, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     private Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         var errorMessage = exception switch

@@ -34,6 +34,7 @@
     <Folder Include="Models\Auth\" />
     <Folder Include="Models\Users\" />
     <Folder Include="Configuration\" />
+    <Folder Include="Filters\" />
     <Folder Include="Services\Auth\" />
     <Folder Include="Services\Tg\Helpers\" />
     <Folder Include="Services\UserManagement\" />
