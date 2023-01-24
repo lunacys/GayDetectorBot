@@ -34,7 +34,7 @@ namespace GayDetectorBot.WebApi
                 await context.Database.EnsureCreatedAsync();
 
                 var settings = services.GetRequiredService<IOptions<AppSettings>>();
-                DbInitializer.Initialize(context, settings.Value);
+                await DbInitializer.Initialize(context, settings.Value);
 
                 var commandMapService = services.GetRequiredService<ICommandMapService>();
                 await commandMapService.Initialize();

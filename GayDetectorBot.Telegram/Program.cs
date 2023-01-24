@@ -107,7 +107,7 @@ namespace GayDetectorBot.Telegram
             var partStr = "";
             foreach (var part in participants)
             {
-                partStr += $"{{{part.ParticipantId}|{part.ChatId}|{part.Username}|{part.StartedAt:yyyy-MM-dd HH:mm:ss.ms}+05|{part.IsRemoved}|{part.FirstName}|{part.LastName}}}\n";
+                partStr += $"{{{part.ParticipantId}|{part.ChatId}|{part.Username}|{part.StartedAt:yyyy-MM-dd HH:mm:ss.ms}+05|{part.IsRemoved}|{part.FirstName ?? "NULL"}|{part.LastName ?? "NULL"}}}\n";
             }
             await File.WriteAllTextAsync("DB_Participants.txt", partStr);
         }
