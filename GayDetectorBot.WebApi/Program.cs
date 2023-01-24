@@ -42,8 +42,8 @@ namespace GayDetectorBot.WebApi
                 var schedulerService = services.GetRequiredService<ISchedulerService>();
                 await schedulerService.Initialize();
 
-                var telegramService = services.GetRequiredService<ITelegramService>();
-                await telegramService.Initialize();
+                //var telegramService = services.GetRequiredService<ITelegramService>();
+                //await telegramService.Initialize();
             }
             catch (Exception e)
             {

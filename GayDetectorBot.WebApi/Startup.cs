@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GayDetectorBot.WebApi.Configuration;
+using GayDetectorBot.WebApi.Controllers;
 using GayDetectorBot.WebApi.Data;
 using GayDetectorBot.WebApi.Services.Auth;
 using GayDetectorBot.WebApi.Services.UserManagement;
@@ -79,7 +80,7 @@ public class Startup
             });
         });
 
-        services.AddControllers();
+        services.AddControllers().AddNewtonsoftJson();
         services.AddAuthorization();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -147,10 +148,15 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+        var cfg = Configuration.GetSection("Telegram").Get<TelegramOptions>();
+
         app.UseEndpoints(endpoints =>
         {
+            if (cfg!.UseWebhooks)
+                endpoints.MapBotWebhookRoute<BotController>(cfg!.Route);
+            else
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
             endpoints.MapControllers();
-            endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
         });
 
         /*app.UseSpa(builder =>

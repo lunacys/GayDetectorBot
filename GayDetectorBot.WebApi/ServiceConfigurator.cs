@@ -45,7 +45,18 @@ public static class ServiceConfigurator
 
             return new MessageHandlerService(logger, commandMap, hmc, provider, js, tgOpt);
         });
-        services.AddSingleton<ITelegramService, TelegramService>();
+        //services.AddSingleton<ITelegramService, TelegramService>();
+        services.AddHttpClient("telegram_bot_client")
+            .AddTypedClient<ITelegramService>((client, sp) =>
+            {
+                var logger = sp.GetRequiredService<ILogger<TelegramService>>();
+                var tgOpt = sp.GetRequiredService<IOptions<TelegramOptions>>();
+                var msgHandler = sp.GetRequiredService<IMessageHandlerService>();
+
+                return new TelegramService(logger, tgOpt, msgHandler);
+            });
+
+        services.AddHostedService<WebhookService>();
     }
 
     private static void AddHandlers(IServiceCollection services)

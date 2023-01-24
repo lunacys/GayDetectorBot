@@ -30,6 +30,9 @@ public class TelegramService : ITelegramService
     {
         _telegramClient = new TelegramBotClient(_tgOptions.Token.Trim());
 
+        if (_tgOptions.UseWebhooks)
+            return;
+
         var receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = { }
