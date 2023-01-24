@@ -30,6 +30,9 @@ public class TelegramService : ITelegramService
     {
         _telegramClient = new TelegramBotClient(_tgOptions.Token.Trim());
 
+        var me = await _telegramClient.GetMeAsync();
+        _logger.LogInformation($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
+
         if (_tgOptions.UseWebhooks)
             return;
 
@@ -39,14 +42,11 @@ public class TelegramService : ITelegramService
         };
 
         _telegramClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions);
-
-        var me = await _telegramClient.GetMeAsync();
-        _logger.LogInformation($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
     }
 
-    public Task HandleUpdateFromController(Update update, CancellationToken cancellationToken)
+    public async Task HandleUpdateFromController(Update update, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _messageHandler.Update(update, _telegramClient);
     }
 
     private Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken token)
