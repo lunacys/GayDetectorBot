@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using GayDetectorBot.WebApi.Configuration;
+using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
@@ -23,6 +24,7 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly IServiceProvider _serviceProvider;
     private readonly IJsEvaluatorService _jsEvaluator;
     private readonly TelegramOptions _options;
+    private readonly ISavedFileContainer _savedFileContainer;
 
     private readonly string _helpMessage;
 
@@ -32,13 +34,15 @@ public class MessageHandlerService : IMessageHandlerService
         IHandlerMetadataContainer handlerMetadataContainer, 
         IServiceProvider serviceProvider,
         IJsEvaluatorService jsEvaluator,
-        IOptions<TelegramOptions> options)
+        IOptions<TelegramOptions> options,
+        ISavedFileContainer savedFileContainer)
     {
         _logger = logger;
         _commandMap = commandMap;
         _serviceProvider = serviceProvider;
         _jsEvaluator = jsEvaluator;
         _options = options.Value;
+        _savedFileContainer = savedFileContainer;
 
         _handlerTypes = handlerMetadataContainer.GetHandlerTypes();
 
@@ -61,39 +65,123 @@ public class MessageHandlerService : IMessageHandlerService
         if (message == null)
             return;
 
-        if (message.Type == MessageType.Photo)
+        _logger.LogInformation(
+            $"Handling message '{message.Text}' in chat '{message.Chat.Id}' from '{message.From?.Username}' ({message.From?.Id})");
+
+        var task = message.Type switch
         {
-            //foreach (var photo in message.Photo)
-            {
-                var photo = message.Photo.Last();
-                var fileId = photo.FileId;
-                var fileInfo = await client.GetFileAsync(fileId);
-                var filePath = fileInfo.FilePath;
-                var extension = Path.GetExtension(filePath);
+            MessageType.Photo => HandlePhoto(message, client),
+            MessageType.Audio => HandleAudio(message, client),
+            MessageType.Video => HandleVideo(message, client),
+            MessageType.Voice => HandleVoice(message, client),
+            MessageType.Document => HandleDocument(message, client),
+            MessageType.Sticker => HandleSticker(message, client),
+            _ => Task.CompletedTask
+        };
+        await task;
 
-                string dest = "./downloads/" + Utils.GenerateRandomString() + extension;
+        // We want to handle text in any case.
+        await HandleText(message, client);
+    }
 
-                Directory.CreateDirectory(Path.GetDirectoryName(dest));
-
-                await using Stream fileStream = File.OpenWrite(dest);
-                await client.DownloadFileAsync(filePath, fileStream);
-            }
-
+    private async Task HandlePhoto(Message message, ITelegramBotClient client)
+    {
+        if (message.Photo == null || message.Photo.Length == 0)
             return;
-        }
-        else if (message.Type == MessageType.Video)
+
+        var pid = message.Photo.Last().FileId;
+
+        await _savedFileContainer.Save(new SavedFile
         {
+            FileId = pid,
+            Type = SavedFileType.Photo
+        });
+    }
 
+    private async Task HandleVideo(Message message, ITelegramBotClient client)
+    {
+        if (message.Video == null)
             return;
-        }
-        else if (message.Type == MessageType.Document)
+
+        var pid = message.Video.FileId;
+
+        await _savedFileContainer.Save(new SavedFile
         {
+            FileId = pid,
+            Type = SavedFileType.Video
+        });
+    }
 
-            return;
-        }
-        else if (message.Type != MessageType.Text)
+    private async Task HandleDocument(Message message, ITelegramBotClient client)
+    {
+        if (message.Document == null)
             return;
 
+        var pid = message.Document.FileId;
+
+        await _savedFileContainer.Save(new SavedFile
+        {
+            FileId = pid,
+            Type = SavedFileType.Document
+        });
+    }
+
+    private async Task HandleAudio(Message message, ITelegramBotClient client)
+    {
+        if (message.Audio == null)
+            return;
+
+        var pid = message.Audio.FileId;
+
+        await _savedFileContainer.Save(new SavedFile
+        {
+            FileId = pid,
+            Type = SavedFileType.Audio
+        });
+    }
+
+    private async Task HandleSticker(Message message, ITelegramBotClient client)
+    {
+        if (message.Sticker == null)
+            return;
+
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleVoice(Message message, ITelegramBotClient client)
+    {
+        if (message.Voice == null)
+            return;
+
+        var pid = message.Voice.FileId;
+
+        await _savedFileContainer.Save(new SavedFile
+        {
+            FileId = pid,
+            Type = SavedFileType.Voice
+        });
+    }
+
+    private async Task DownloadFile(string fileId, string basePath, ITelegramBotClient client)
+    {
+        var fileInfo = await client.GetFileAsync(fileId);
+        var filePath = fileInfo.FilePath;
+
+        if (filePath == null)
+            return;
+
+        var extension = Path.GetExtension(filePath);
+
+        string dest = basePath + Utils.GenerateRandomString() + extension;
+
+        Directory.CreateDirectory(Path.GetDirectoryName(dest));
+
+        await using Stream fileStream = File.OpenWrite(dest);
+        await client.DownloadFileAsync(filePath, fileStream);
+    }
+
+    private async Task HandleText(Message message, ITelegramBotClient client)
+    {
         var text = message.Text;
 
         if (string.IsNullOrEmpty(text))
@@ -299,9 +387,7 @@ public class MessageHandlerService : IMessageHandlerService
             if (data.Metadata.HasParameters)
             {
                 result += $"{data.Metadata.CommandAlias} ";
-
                 result += string.Join(' ', data.Metadata.Parameters.Select(s => $"<{s}>"));
-
                 result += "` - " + data.Metadata.Description;
             }
             else

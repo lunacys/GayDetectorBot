@@ -42,6 +42,9 @@ namespace GayDetectorBot.WebApi
                 var schedulerService = services.GetRequiredService<ISchedulerService>();
                 await schedulerService.Initialize();
 
+                var savedFileContainer = services.GetRequiredService<ISavedFileContainer>();
+                await savedFileContainer.Initialize();
+
                 //var telegramService = services.GetRequiredService<ITelegramService>();
                 //await telegramService.Initialize();
             }

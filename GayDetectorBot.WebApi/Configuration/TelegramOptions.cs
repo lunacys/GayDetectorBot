@@ -10,4 +10,6 @@ public class TelegramOptions
     public string Route { get; set; } = null!;
     public string SecretToken { get; set; } = null!;
     public bool UseWebhooks { get; set; }
+    public string AudioPath { get; set; } = null!;
+    public string VoicePath { get; set; } = null!;
 }

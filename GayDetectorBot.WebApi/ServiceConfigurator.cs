@@ -26,6 +26,8 @@ public static class ServiceConfigurator
         services.AddSingleton<IGayRepository, GayRepository>();
         services.AddSingleton<IParticipantRepository, ParticipantRepository>();
         services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+        services.AddSingleton<ISavedFileRepository, SavedFileRepository>();
+        services.AddSingleton<ISavedFileContainer, SavedFileContainer>();
 
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddSingleton<IJsEvaluatorService, JsEvaluatorService>();
@@ -42,8 +44,9 @@ public static class ServiceConfigurator
             var hmc = provider.GetRequiredService<IHandlerMetadataContainer>();
             var js = provider.GetRequiredService<IJsEvaluatorService>();
             var tgOpt = provider.GetRequiredService<IOptions<TelegramOptions>>();
+            var sf = provider.GetRequiredService<ISavedFileContainer>();
 
-            return new MessageHandlerService(logger, commandMap, hmc, provider, js, tgOpt);
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js, tgOpt, sf);
         });
         //services.AddSingleton<ITelegramService, TelegramService>();
         services.AddHttpClient("telegram_bot_client")
@@ -75,6 +78,7 @@ public static class ServiceConfigurator
         services.AddTransient<HandlerRemoveMe>();
         services.AddTransient<HandlerSchedule>();
         services.AddTransient<HandlerWhoAdded>();
+        services.AddTransient<HandlerRandomPhoto>();
     }
 
     private static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)

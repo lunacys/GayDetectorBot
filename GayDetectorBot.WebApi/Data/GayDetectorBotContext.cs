@@ -12,6 +12,7 @@ public class GayDetectorBotContext : DbContext
     public DbSet<Participant> Participants { get; private set; } = null!;
     public DbSet<Chat> Chats { get; private set; } = null!;
     public DbSet<SchedulerContext> Schedules { get; private set; } = null!;
+    public DbSet<SavedFile> SavedFiles { get; private set; } = null!;
 
     public GayDetectorBotContext(DbContextOptions<GayDetectorBotContext> options)
         : base(options)
@@ -29,5 +30,6 @@ public class GayDetectorBotContext : DbContext
         modelBuilder.Entity<Participant>().ToTable("Participant");
         modelBuilder.Entity<Chat>().ToTable("Chat");
         modelBuilder.Entity<SchedulerContext>().ToTable("Schedules");
+        modelBuilder.Entity<SavedFile>().ToTable("SavedFile");
     }
 }
