@@ -7,7 +7,9 @@ using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using File = System.IO.File;
+using Update = Telegram.Bot.Types.Update;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
@@ -19,7 +21,6 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly IEnumerable<(Type Type, MessageHandlerAttribute Metadata)> _handlerTypes;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly IHandlerMetadataContainer _handlerMetadataContainer;
     private readonly IJsEvaluatorService _jsEvaluator;
     private readonly TelegramOptions _options;
 
@@ -35,19 +36,27 @@ public class MessageHandlerService : IMessageHandlerService
     {
         _logger = logger;
         _commandMap = commandMap;
-        _handlerMetadataContainer = handlerMetadataContainer;
         _serviceProvider = serviceProvider;
         _jsEvaluator = jsEvaluator;
         _options = options.Value;
 
-        _handlerTypes = _handlerMetadataContainer.GetHandlerTypes();
+        _handlerTypes = handlerMetadataContainer.GetHandlerTypes();
 
         _helpMessage = GetHelpMessage();
 
         Directory.CreateDirectory("downloads");
     }
     
-    public async Task Message(Message? message, ITelegramBotClient client)
+    public async Task Update(Update? update, ITelegramBotClient client)
+    {
+        if (update == null)
+            return;
+
+        if (update.Type == UpdateType.Message)
+            await HandleMessage(update.Message, client);
+    }
+
+    private async Task HandleMessage(Message? message, ITelegramBotClient client)
     {
         if (message == null)
             return;
@@ -69,7 +78,7 @@ public class MessageHandlerService : IMessageHandlerService
                 await using Stream fileStream = File.OpenWrite(dest);
                 await client.DownloadFileAsync(filePath, fileStream);
             }
-            
+
             return;
         }
         else if (message.Type == MessageType.Video)

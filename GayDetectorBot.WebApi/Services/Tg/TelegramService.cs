@@ -64,21 +64,12 @@ public class TelegramService : ITelegramService
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken token)
     {
-        if (update.Type != UpdateType.Message)
-            return;
-
-        //if (update.Message!.Type != MessageType.Text)
-        //    return;
-
-        if (update.Message == null)
-            return;
-
-        var chatId = update.Message.Chat.Id;
-        var text = update.Message.Text;
-        var from = update.Message.From;
+        var chatId = update?.Message?.Chat.Id;
+        var text = update?.Message?.Text;
+        var from = update?.Message?.From;
 
         _logger.LogInformation($"Received a '{text}' message in chat {chatId} from {from?.FirstName} {from?.LastName} @{from?.Username}");
 
-        await _messageHandler.Message(update.Message, client);
+        await _messageHandler.Update(update, client);
     }
 }

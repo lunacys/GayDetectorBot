@@ -5,5 +5,5 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
 public interface IMessageHandlerService
 {
-    Task Message(Message? message, ITelegramBotClient client);
+    Task Update(Update? update, ITelegramBotClient client);
 }
