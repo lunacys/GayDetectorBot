@@ -88,7 +88,7 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
                     var delta = nextDate - today;
 
                     await SendTextAsync($"Сегодня пидор @{gayToday}\n" +
-                                                              $"Следующее обновление через {delta.Hours}:{delta.Minutes.ToString().PadLeft(2, '0')}", message.MessageId);
+                                                              $"Следующее обновление через {delta.Hours.ToString().PadLeft(2, '0')}:{delta.Minutes.ToString().PadLeft(2, '0')}", message.MessageId);
                     return;
                 }
                 else
@@ -96,10 +96,10 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
                     throw Error($"Пидор не обнаружен");
                 }
             }
-
-            var firstMsg = GetRandomPhrase(0);
-            var secondMsg = GetRandomPhrase(1);
-            var thirdMsg = GetRandomPhrase(2);
+            
+            var firstMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));
+            var secondMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));
+            var thirdMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));
 
             await SendTextAsync(firstMsg, null);
 
