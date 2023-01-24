@@ -94,6 +94,7 @@ public class MessageHandlerService : IMessageHandlerService
         await _savedFileContainer.Save(new SavedFile
         {
             FileId = pid,
+            ChatId = message.Chat.Id,
             Type = SavedFileType.Photo
         });
     }
@@ -108,6 +109,7 @@ public class MessageHandlerService : IMessageHandlerService
         await _savedFileContainer.Save(new SavedFile
         {
             FileId = pid,
+            ChatId = message.Chat.Id,
             Type = SavedFileType.Video
         });
     }
@@ -122,6 +124,7 @@ public class MessageHandlerService : IMessageHandlerService
         await _savedFileContainer.Save(new SavedFile
         {
             FileId = pid,
+            ChatId = message.Chat.Id,
             Type = SavedFileType.Document
         });
     }
@@ -136,6 +139,7 @@ public class MessageHandlerService : IMessageHandlerService
         await _savedFileContainer.Save(new SavedFile
         {
             FileId = pid,
+            ChatId = message.Chat.Id,
             Type = SavedFileType.Audio
         });
     }
@@ -158,6 +162,7 @@ public class MessageHandlerService : IMessageHandlerService
         await _savedFileContainer.Save(new SavedFile
         {
             FileId = pid,
+            ChatId = message.Chat.Id,
             Type = SavedFileType.Voice
         });
     }

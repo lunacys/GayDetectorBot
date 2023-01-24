@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GayDetectorBot.WebApi.Migrations
 {
     [DbContext(typeof(GayDetectorBotContext))]
-    [Migration("20230124155301_AddSavedFiles")]
-    partial class AddSavedFiles
+    [Migration("20230124163755_StartOver")]
+    partial class StartOver
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,9 @@ namespace GayDetectorBot.WebApi.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("ChatId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FileId")
                         .IsRequired()

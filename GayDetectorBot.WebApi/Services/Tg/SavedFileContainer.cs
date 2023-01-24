@@ -1,82 +1,83 @@
 ﻿using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Models.Tg;
+using File = System.IO.File;
 
 namespace GayDetectorBot.WebApi.Services.Tg;
 
 public class SavedFileContainer : ISavedFileContainer
 {
-    private readonly Dictionary<SavedFileType, List<SavedFile>> _savedFiles;
+    private readonly Dictionary<long, List<SavedFile>> _savedFiles;
 
     private readonly ISavedFileRepository _savedFileRepository;
 
     public SavedFileContainer(ISavedFileRepository savedFileRepository)
     {
         _savedFileRepository = savedFileRepository;
-
-        _savedFiles = new Dictionary<SavedFileType, List<SavedFile>>();
-
-        var allTypes = Enum.GetValues<SavedFileType>();
-        foreach (var ft in allTypes)
-        {
-            _savedFiles[ft] = new List<SavedFile>();
-        }
+        _savedFiles = new Dictionary<long, List<SavedFile>>();
     }
 
-    public async Task Initialize()
+    public Task Initialize()
     {
-        var files = await _savedFileRepository.RetrieveAll();
-
-        foreach (var file in files)
-        {
-            _savedFiles[file.Type].Add(file);
-        }
+        return Task.CompletedTask;
     }
 
     public async Task Save(SavedFile file)
     {
-        _savedFiles[file.Type].Add(file);
+        if (!_savedFiles.ContainsKey(file.ChatId))
+        {
+            await InitializeFromDb(file.ChatId);
+        }
+
+        _savedFiles[file.ChatId].Add(file);
         await _savedFileRepository.Save(file);
     }
 
-    public IEnumerable<SavedFile> GetAll()
+    public async Task<IEnumerable<SavedFile>> GetAll(long chatId)
     {
-        var vals = _savedFiles.Values;
-
-        foreach (var val in vals)
+        if (!_savedFiles.ContainsKey(chatId))
         {
-            foreach (var savedFile in val)
-            {
-                yield return savedFile;
-            }
+            await InitializeFromDb(chatId);
         }
+
+        return _savedFiles[chatId];
     }
 
-    public IEnumerable<SavedFile> GetAllByType(SavedFileType type)
+    public async Task<IEnumerable<SavedFile>> GetAllByType(long chatId, SavedFileType type)
     {
-        return _savedFiles[type];
-    }
-
-    public SavedFile? GetById(string id)
-    {
-        var vals = _savedFiles.Values;
-        foreach (var val in vals)
+        if (!_savedFiles.ContainsKey(chatId))
         {
-            foreach (var savedFile in val)
-            {
-                if (savedFile.FileId == id)
-                    return savedFile;
-            }
+            await InitializeFromDb(chatId);
         }
-        
-        return null;
+
+        return _savedFiles[chatId].Where(f => f.Type == type).ToList();
     }
 
-    public SavedFile? GetRandomByType(SavedFileType type)
+    public async Task<SavedFile?> GetById(long chatId, string id)
     {
-        var vals = _savedFiles[type];
+        if (!_savedFiles.ContainsKey(chatId))
+        {
+            await InitializeFromDb(chatId);
+        }
+
+        return _savedFiles[chatId].FirstOrDefault(f => f.FileId == id);
+    }
+
+    public async Task<SavedFile?> GetRandomByType(long chatId, SavedFileType type)
+    {
+        if (!_savedFiles.ContainsKey(chatId))
+        {
+            await InitializeFromDb(chatId);
+        }
 
         var rnd = new Random();
+        var files = _savedFiles[chatId].Where(f => f.Type == type).ToList();
 
-        return vals[rnd.Next(vals.Count)];
+        return files[rnd.Next(files.Count)];
+    }
+
+    private async Task InitializeFromDb(long chatId)
+    {
+        var files = await _savedFileRepository.RetrieveAll(chatId);
+        _savedFiles[chatId] = files?.ToList() ?? new List<SavedFile>();
     }
 }

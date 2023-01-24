@@ -24,7 +24,7 @@ public class HandlerRandomPhoto : HandlerBase
     {
         var chatId = message.Chat.Id;
 
-        var rnd = _savedFileContainer.GetRandomByType(SavedFileType.Photo);
+        var rnd = await _savedFileContainer.GetRandomByType(chatId, SavedFileType.Photo);
 
         if (rnd == null)
             throw Error("Нету фоток");

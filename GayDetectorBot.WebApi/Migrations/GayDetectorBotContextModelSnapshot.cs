@@ -133,6 +133,9 @@ namespace GayDetectorBot.WebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<long>("ChatId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("FileId")
                         .IsRequired()
                         .HasColumnType("text");

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GayDetectorBot.WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class StartOver : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,6 +59,21 @@ namespace GayDetectorBot.WebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Participant", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SavedFile",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ChatId = table.Column<long>(type: "bigint", nullable: false),
+                    FileId = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SavedFile", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,6 +144,9 @@ namespace GayDetectorBot.WebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Gay");
+
+            migrationBuilder.DropTable(
+                name: "SavedFile");
 
             migrationBuilder.DropTable(
                 name: "Schedules");

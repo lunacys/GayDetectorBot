@@ -7,8 +7,8 @@ public interface ISavedFileContainer
     Task Initialize();
     Task Save(SavedFile file);
 
-    IEnumerable<SavedFile> GetAll();
-    IEnumerable<SavedFile> GetAllByType(SavedFileType type);
-    SavedFile? GetById(string id);
-    SavedFile? GetRandomByType(SavedFileType type);
+    Task<IEnumerable<SavedFile>> GetAll(long chatId);
+    Task<IEnumerable<SavedFile>> GetAllByType(long chatId, SavedFileType type);
+    Task<SavedFile?> GetById(long chatId, string id);
+    Task<SavedFile?> GetRandomByType(long chatId, SavedFileType type);
 }
