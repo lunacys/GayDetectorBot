@@ -69,6 +69,9 @@ public class SavedFileContainer : ISavedFileContainer
             await InitializeFromDb(chatId);
         }
 
+        if (_savedFiles[chatId].Count == 0)
+            return null;
+
         var rnd = new Random();
         var files = _savedFiles[chatId].Where(f => f.Type == type).ToList();
 
