@@ -1,5 +1,4 @@
 ﻿using GayDetectorBot.WebApi.Configuration;
-using GayDetectorBot.WebApi.Data;
 using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Services.Auth;
 using GayDetectorBot.WebApi.Services.Tg;
@@ -7,7 +6,6 @@ using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using GayDetectorBot.WebApi.Services.UserManagement;
 using System.Reflection;
-using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
 using Microsoft.Extensions.Options;
 
 namespace GayDetectorBot.WebApi;
@@ -43,14 +41,13 @@ public static class ServiceConfigurator
             var commandMap = provider.GetRequiredService<ICommandMapService>();
             var hmc = provider.GetRequiredService<IHandlerMetadataContainer>();
             var js = provider.GetRequiredService<IJsEvaluatorService>();
-            var tgOpt = provider.GetRequiredService<IOptions<TelegramOptions>>();
             var sf = provider.GetRequiredService<ISavedFileContainer>();
 
-            return new MessageHandlerService(logger, commandMap, hmc, provider, js, tgOpt, sf);
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js, sf);
         });
         //services.AddSingleton<ITelegramService, TelegramService>();
         services.AddHttpClient("telegram_bot_client")
-            .AddTypedClient<ITelegramService>((client, sp) =>
+            .AddTypedClient<ITelegramService>((_, sp) =>
             {
                 var logger = sp.GetRequiredService<ILogger<TelegramService>>();
                 var tgOpt = sp.GetRequiredService<IOptions<TelegramOptions>>();
@@ -64,31 +61,11 @@ public static class ServiceConfigurator
 
     private static void AddHandlers(IServiceCollection services)
     {
-        services.AddTransient<HandlerAddCommand>();
-        services.AddTransient<HandlerAddParticipant>();
-        services.AddTransient<HandlerCommandList>();
-        services.AddTransient<HandlerDeleteCommand>();
-        services.AddTransient<HandlerEval>();
-        services.AddTransient<HandlerFindGay>();
-        services.AddTransient<HandlerGayOfTheDay>();
-        services.AddTransient<HandlerGayTop>();
-        services.AddTransient<HandlerGetRoles>();
-        services.AddTransient<HandlerParticipants>();
-        services.AddTransient<HandlerRandom>();
-        services.AddTransient<HandlerRemoveMe>();
-        services.AddTransient<HandlerSchedule>();
-        services.AddTransient<HandlerWhoAdded>();
-        services.AddTransient<HandlerRandomPhoto>();
-    }
+        var types = HandlerMetadataContainer.GetTypesWithAttribute(Assembly.GetExecutingAssembly());
 
-    private static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)
-    {
-        foreach (var type in assembly.GetTypes())
+        foreach (var valueTuple in types)
         {
-            var attr = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
-
-            if (attr.Length > 0)
-                yield return (type, attr[0] as MessageHandlerAttribute)!;
+            services.AddTransient(valueTuple.type);
         }
     }
 }

@@ -1,14 +1,8 @@
-﻿using System.Reflection;
-using GayDetectorBot.WebApi.Configuration;
-using GayDetectorBot.WebApi.Data.Repositories;
-using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
-using GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
-using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using File = System.IO.File;
 using Update = Telegram.Bot.Types.Update;
 
@@ -23,7 +17,6 @@ public class MessageHandlerService : IMessageHandlerService
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IJsEvaluatorService _jsEvaluator;
-    private readonly TelegramOptions _options;
     private readonly ISavedFileContainer _savedFileContainer;
 
     private readonly string _helpMessage;
@@ -34,14 +27,12 @@ public class MessageHandlerService : IMessageHandlerService
         IHandlerMetadataContainer handlerMetadataContainer, 
         IServiceProvider serviceProvider,
         IJsEvaluatorService jsEvaluator,
-        IOptions<TelegramOptions> options,
         ISavedFileContainer savedFileContainer)
     {
         _logger = logger;
         _commandMap = commandMap;
         _serviceProvider = serviceProvider;
         _jsEvaluator = jsEvaluator;
-        _options = options.Value;
         _savedFileContainer = savedFileContainer;
 
         _handlerTypes = handlerMetadataContainer.GetHandlerTypes();
@@ -66,16 +57,20 @@ public class MessageHandlerService : IMessageHandlerService
             return;
 
         _logger.LogInformation(
-            $"Handling message '{message.Text}' in chat '{message.Chat.Id}' from '{message.From?.Username}' ({message.From?.Id})");
+            $"Handling message '{message.Text}' " +
+            $"of type '{message.Type}' " +
+            $"in chat '{message.Chat.Id}' " +
+            $"from '{message.From?.Username}' ({message.From?.Id})"
+        );
 
         var task = message.Type switch
         {
-            MessageType.Photo => HandlePhoto(message, client),
-            MessageType.Audio => HandleAudio(message, client),
-            MessageType.Video => HandleVideo(message, client),
-            MessageType.Voice => HandleVoice(message, client),
-            MessageType.Document => HandleDocument(message, client),
-            MessageType.Sticker => HandleSticker(message, client),
+            MessageType.Photo => HandlePhoto(message),
+            MessageType.Audio => HandleAudio(message),
+            MessageType.Video => HandleVideo(message),
+            MessageType.Voice => HandleVoice(message),
+            MessageType.Document => HandleDocument(message),
+            MessageType.Sticker => HandleSticker(message),
             _ => Task.CompletedTask
         };
         await task;
@@ -84,7 +79,7 @@ public class MessageHandlerService : IMessageHandlerService
         await HandleText(message, client);
     }
 
-    private async Task HandlePhoto(Message message, ITelegramBotClient client)
+    private async Task HandlePhoto(Message message)
     {
         if (message.Photo == null || message.Photo.Length == 0)
             return;
@@ -99,7 +94,7 @@ public class MessageHandlerService : IMessageHandlerService
         });
     }
 
-    private async Task HandleVideo(Message message, ITelegramBotClient client)
+    private async Task HandleVideo(Message message)
     {
         if (message.Video == null)
             return;
@@ -114,7 +109,7 @@ public class MessageHandlerService : IMessageHandlerService
         });
     }
 
-    private async Task HandleDocument(Message message, ITelegramBotClient client)
+    private async Task HandleDocument(Message message)
     {
         if (message.Document == null)
             return;
@@ -129,7 +124,7 @@ public class MessageHandlerService : IMessageHandlerService
         });
     }
 
-    private async Task HandleAudio(Message message, ITelegramBotClient client)
+    private async Task HandleAudio(Message message)
     {
         if (message.Audio == null)
             return;
@@ -144,7 +139,7 @@ public class MessageHandlerService : IMessageHandlerService
         });
     }
 
-    private async Task HandleSticker(Message message, ITelegramBotClient client)
+    private async Task HandleSticker(Message message)
     {
         if (message.Sticker == null)
             return;
@@ -152,7 +147,7 @@ public class MessageHandlerService : IMessageHandlerService
         await Task.CompletedTask;
     }
 
-    private async Task HandleVoice(Message message, ITelegramBotClient client)
+    private async Task HandleVoice(Message message)
     {
         if (message.Voice == null)
             return;
@@ -245,6 +240,7 @@ public class MessageHandlerService : IMessageHandlerService
                         var lastIndex = 0;
                         var curIndex = 0;
 
+                        // Parsing parameters
                         while (data != null && lastIndex < data.Length)
                         {
                             if (curIndex + 1 >= handlerType.Metadata.ParameterCount)
@@ -262,10 +258,12 @@ public class MessageHandlerService : IMessageHandlerService
                             }
                         }
 
+                        _logger.LogInformation($"Executing command '{handlerType.Metadata.CommandAlias}'");
                         await Handle(handlerType.Type, chatId, client, message, paramList.ToArray());
                     }
-                    else
+                    else // ParameterCount <= 1
                     {
+                        _logger.LogInformation($"Executing command '{handlerType.Metadata.CommandAlias}'");
                         await Handle(handlerType.Type, chatId, client, message, data?.Trim() ?? "");
                     }
                 }
@@ -298,11 +296,15 @@ public class MessageHandlerService : IMessageHandlerService
                 if (string.IsNullOrEmpty(c))
                     return;
 
+                // Removing user tags except for @gamee
                 if (c.ToLower() != "@gamee")
                     c = c.Replace("@", "");
 
+                // If a command starts with '!eval' it is a JS script, so we'll need to evaluate it
                 if (c.StartsWith("!eval "))
                 {
+                    _logger.LogInformation($"Evaluating custom JS command '{lower}' with content: {c}");
+
                     var evalContent = c.Replace("!eval ", "");
                     var res = await _jsEvaluator.EvaluateAsync(evalContent, engine =>
                     {
@@ -320,6 +322,8 @@ public class MessageHandlerService : IMessageHandlerService
                 }
                 else
                 {
+                    _logger.LogInformation($"Executing custom command '{lower}' with content: {c}");
+
                     await client.SendTextMessageAsync(message.Chat.Id, c, parseMode: ParseMode.Html,
                         replyToMessageId: message.MessageId);
                 }

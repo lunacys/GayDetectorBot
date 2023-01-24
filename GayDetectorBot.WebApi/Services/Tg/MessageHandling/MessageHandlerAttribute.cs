@@ -2,6 +2,13 @@
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
+public static class CommandCategories
+{
+    public const string Gays = "Пидорство";
+    public const string Commands = "Кастомные команды";
+    public const string Utils = "Всякое разное";
+}
+
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class MessageHandlerAttribute : Attribute
 {
@@ -19,6 +26,7 @@ public sealed class MessageHandlerAttribute : Attribute
     public MessageHandlerAttribute(string commandAlias, string? description)
         : this(commandAlias, description, null)
     { }
+    
 
     public MessageHandlerAttribute(string commandAlias, string? description = null, MemberStatusPermission permissions = MemberStatusPermission.Creator | MemberStatusPermission.Administrator)
         : this(commandAlias, description, permissions, null)

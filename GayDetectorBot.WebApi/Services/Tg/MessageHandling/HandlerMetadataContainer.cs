@@ -4,8 +4,8 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
 public class HandlerMetadataContainer : IHandlerMetadataContainer
 {
-    private List<string> _reservedCommands = null!;
-    private List<(Type type, MessageHandlerAttribute attribute)> _handlerTypes = null!;
+    private readonly List<string> _reservedCommands;
+    private readonly List<(Type type, MessageHandlerAttribute attribute)> _handlerTypes;
 
     public HandlerMetadataContainer()
     {
@@ -24,7 +24,7 @@ public class HandlerMetadataContainer : IHandlerMetadataContainer
         return _handlerTypes;
     }
 
-    private static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)
+    public static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)
     {
         foreach (var type in assembly.GetTypes())
         {
