@@ -14,7 +14,7 @@ public abstract class HandlerBase : IMessageHandler
 
     public virtual async Task SendTextAsync(string message, int? messageId, ParseMode parseMode = ParseMode.Markdown)
     {
-        await Client.SendTextMessageAsync(ChatId, message, parseMode, replyToMessageId: messageId);
+        await Client.SendTextMessageAsync(ChatId, message, parseMode: parseMode, replyToMessageId: messageId);
     }
 
     public virtual Exception Error(string message)

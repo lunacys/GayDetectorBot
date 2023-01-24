@@ -7,8 +7,6 @@ using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using File = System.IO.File;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
@@ -104,7 +102,7 @@ public class MessageHandlerService : IMessageHandlerService
 
         if (lower == "!помоги")
         {
-            await client.SendTextMessageAsync(chatId, _helpMessage, ParseMode.Markdown);
+            await client.SendTextMessageAsync(chatId, _helpMessage, parseMode: ParseMode.Markdown);
             return;
         }
 
@@ -171,13 +169,13 @@ public class MessageHandlerService : IMessageHandlerService
                 }
                 catch (TelegramCommandException e)
                 {
-                    await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, ParseMode.Markdown);
+                    await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, parseMode: ParseMode.Markdown);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e.ToString());
                     await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message,
-                        ParseMode.Markdown);
+                        parseMode: ParseMode.Markdown);
                 }
 
                 return;
@@ -210,17 +208,17 @@ public class MessageHandlerService : IMessageHandlerService
                             {
                                 var cmd = _commandMap.GetByChatId(chatId).Find(co => co.Prefix == snd);
                                 if (cmd != null)
-                                    await client.SendTextMessageAsync(chatId, cmd.Content, ParseMode.Html);
+                                    await client.SendTextMessageAsync(chatId, cmd.Content, parseMode: ParseMode.Html);
                             }
                         );
                     });
 
-                    await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", ParseMode.Html,
+                    await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", parseMode: ParseMode.Html,
                         replyToMessageId: message.MessageId);
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(message.Chat.Id, c, ParseMode.Html,
+                    await client.SendTextMessageAsync(message.Chat.Id, c, parseMode: ParseMode.Html,
                         replyToMessageId: message.MessageId);
                 }
             }
