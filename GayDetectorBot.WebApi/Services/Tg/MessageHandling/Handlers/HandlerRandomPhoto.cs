@@ -1,5 +1,6 @@
 ﻿using GayDetectorBot.WebApi.Configuration;
 using GayDetectorBot.WebApi.Data.Repositories;
+using GayDetectorBot.WebApi.Models;
 using GayDetectorBot.WebApi.Models.Tg;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;

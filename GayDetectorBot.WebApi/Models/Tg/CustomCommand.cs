@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GayDetectorBot.WebApi.Models.Tg;
@@ -10,6 +11,7 @@ public class CustomCommand
     [Required]
     public long ChatId { get; set; }
     [Required]
+    [ProtectedPersonalData]
     public string UserAddedName { get; set; } = null!;
     [Required]
     public string CommandPrefix { get; set; } = null!;

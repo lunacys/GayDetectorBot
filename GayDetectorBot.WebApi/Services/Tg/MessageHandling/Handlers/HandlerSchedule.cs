@@ -1,4 +1,5 @@
-﻿using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models;
+using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using Telegram.Bot.Types;
 

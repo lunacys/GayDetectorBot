@@ -1,4 +1,4 @@
-﻿using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 

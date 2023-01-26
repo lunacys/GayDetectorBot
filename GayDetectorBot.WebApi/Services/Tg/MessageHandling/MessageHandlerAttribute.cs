@@ -1,4 +1,4 @@
-﻿using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 
