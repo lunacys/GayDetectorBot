@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands;
 
 [MessageHandler("добавить-команду", "название-команды", "текстовое содержание")]
-[MessageHandlerMetadata("добавить кастомную команду")]
+[MessageHandlerMetadata("добавить кастомную команду", CommandCategories.Commands)]
 [MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerAddCommand : HandlerBase<string, string>
 {

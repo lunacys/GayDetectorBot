@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands
 {
     [MessageHandler("команды")]
-    [MessageHandlerMetadata("список всех пользовательских команд")]
+    [MessageHandlerMetadata("список всех пользовательских команд", CommandCategories.Commands)]
     [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerCommandList : HandlerBase
     {

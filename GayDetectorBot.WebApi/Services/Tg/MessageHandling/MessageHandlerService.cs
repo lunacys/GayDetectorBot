@@ -391,29 +391,55 @@ public class MessageHandlerService : IMessageHandlerService
 
     private string GetHelpMessage()
     {
-        var mhc = _handlerTypes;
+        var mhc = _handlerTypes.ToList();
 
         var result = "Список основных команд:\n\n";
 
-        foreach (var data in mhc)
+        var categories = new string[]
         {
-            result += "`!";
+            CommandCategories.Commands,
+            CommandCategories.Gays,
+            CommandCategories.Common,
+            // CommandCategories.DickSize // TODO: Add this
+        };
 
-            if (data.Metadata.Common.HasParameters)
+        foreach (var category in categories)
+        {
+            var cmds =
+                mhc
+                    .Select(mh => mh.Metadata)
+                    .Where(mh =>
+                        mh.Metadata != null && mh.Metadata.Category == category ||
+                        mh.Metadata == null && category == CommandCategories.Common)
+                    .ToList();
+
+            if (cmds.Count == 0)
+                continue;
+            
+            result += $" > **{category}**: \n\n";
+
+            foreach (var data in cmds)
             {
-                result += $"{data.Metadata.Common.CommandAlias} ";
-                result += string.Join(' ', data.Metadata.Common.Parameters.Select(s => $"<{s}>"));
-                if (data.Metadata.Metadata != null)
-                    result += "` - " + data.Metadata.Metadata.Description;
-            }
-            else
-            {
-                result += $"{data.Metadata.Common.CommandAlias}`";
-                if (data.Metadata.Metadata != null)
-                    result += $" - {data.Metadata.Metadata.Description}";
+                result += " - `!";
+
+                if (data.Common.HasParameters)
+                {
+                    result += $"{data.Common.CommandAlias} ";
+                    result += string.Join(' ', data.Common.Parameters.Select(s => $"<{s}>"));
+                    if (data.Metadata != null)
+                        result += "` - " + data.Metadata.Description;
+                }
+                else
+                {
+                    result += $"{data.Common.CommandAlias}`";
+                    if (data.Metadata != null)
+                        result += $" - {data.Metadata.Description}";
+                }
+
+                result += "\n";
             }
 
-            result += "\n";
+            result += "==============\n\n";
         }
 
         return result;

@@ -3,7 +3,7 @@
 namespace GayDetectorBot.WebApi.Tg.Handlers.DickSize;
 
 [MessageHandler("!член")]
-[MessageHandlerMetadata("отмерить размер своего полового органа")]
+[MessageHandlerMetadata("отмерить размер своего полового органа", CommandCategories.DickSize)]
 [MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerMeasureDickSize : HandlerBase
 {

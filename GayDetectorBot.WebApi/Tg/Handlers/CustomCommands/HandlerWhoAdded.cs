@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands;
 
 [MessageHandler("кто-добавил", "название-команды")]
-[MessageHandlerMetadata("узнать, кто добавил кастомную команду")]
+[MessageHandlerMetadata("узнать, кто добавил кастомную команду", CommandCategories.Commands)]
 [MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerWhoAdded : HandlerBase<string>
 {

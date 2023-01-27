@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
     [MessageHandler("топпидоров")]
-    [MessageHandlerMetadata("узнать топ пидоров за всё время")]
+    [MessageHandlerMetadata("узнать топ пидоров за всё время", CommandCategories.Gays)]
     [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerGayTop : HandlerBase
     {
