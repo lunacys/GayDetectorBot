@@ -1,7 +1,7 @@
-﻿using Telegram.Bot.Types;
-using Telegram.Bot;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+namespace GayDetectorBot.WebApi.Tg;
 
 public interface IMessageHandler
 {

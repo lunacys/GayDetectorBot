@@ -3,7 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
+namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
     [MessageHandler("добавить", "добавить пользователя в список рулетки с ссылкой на него", "@тег_пользователя")]
     public class HandlerAddParticipant : HandlerBase<string>

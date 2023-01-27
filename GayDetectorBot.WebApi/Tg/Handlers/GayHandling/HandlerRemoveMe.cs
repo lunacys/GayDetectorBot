@@ -1,8 +1,7 @@
 ﻿using GayDetectorBot.WebApi.Data.Repositories;
-using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
+namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
     [MessageHandler("уберименя", "убрать из списка рулетки - команда только для настоящих пидоров", MemberStatusPermission.All)]
     public class HandlerRemoveMe : HandlerBase

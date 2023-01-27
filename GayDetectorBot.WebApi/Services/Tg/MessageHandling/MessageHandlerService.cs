@@ -1,6 +1,6 @@
-﻿using GayDetectorBot.WebApi.Models;
-using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
+using GayDetectorBot.WebApi.Tg;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -8,6 +8,11 @@ using File = System.IO.File;
 using Update = Telegram.Bot.Types.Update;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+
+public interface IMessageHandlerService
+{
+    Task Update(Update? update, ITelegramBotClient client);
+}
 
 public class MessageHandlerService : IMessageHandlerService
 {

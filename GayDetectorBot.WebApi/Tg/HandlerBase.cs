@@ -1,8 +1,8 @@
-﻿using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+namespace GayDetectorBot.WebApi.Tg;
 
 
 public abstract class HandlerBase : IMessageHandler

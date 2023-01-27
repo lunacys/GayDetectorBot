@@ -1,14 +1,21 @@
-﻿using Esprima;
-using GayDetectorBot.WebApi.Configuration;
+﻿using GayDetectorBot.WebApi.Configuration;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.WebApi.Services.Tg;
+
+public interface ITelegramService
+{
+    ITelegramBotClient Client { get; }
+
+    Task Initialize();
+
+    Task HandleUpdateFromController(Update update, CancellationToken cancellationToken);
+}
 
 public class TelegramService : ITelegramService
 {

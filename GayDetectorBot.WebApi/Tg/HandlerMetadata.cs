@@ -1,4 +1,4 @@
-﻿namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+﻿namespace GayDetectorBot.WebApi.Tg;
 
 public class HandlerMetadata
 {

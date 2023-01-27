@@ -1,8 +1,8 @@
-﻿using GayDetectorBot.WebApi.Models;
+﻿using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.CustomCommands
+namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands
 {
     [MessageHandler("рандом", "выполнить случайную команду из списка всех команд", MemberStatusPermission.All)]
     public class HandlerRandom : HandlerBase

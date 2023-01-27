@@ -1,6 +1,4 @@
-﻿using GayDetectorBot.WebApi.Models;
-
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+﻿namespace GayDetectorBot.WebApi.Tg;
 
 public static class CommandCategories
 {

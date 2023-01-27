@@ -1,9 +1,8 @@
-﻿using GayDetectorBot.WebApi.Models;
-using GayDetectorBot.WebApi.Models.Tg;
+﻿using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+namespace GayDetectorBot.WebApi.Tg.Handlers;
 
 [MessageHandler("таймер", "добавить таймер на нужное время с напоминалкой. Формат времени: hh:mm[:ss]", MemberStatusPermission.All, "через_сколько",
     "напоминалка")]

@@ -4,6 +4,11 @@ using GayDetectorBot.WebApi.Services.UserManagement;
 
 namespace GayDetectorBot.WebApi.Services.Auth;
 
+public interface IAuthService
+{
+    Task<AuthResponse?> AuthAsync(AuthRequest request);
+}
+
 public class AuthService : IAuthService
 {
     private readonly IUserService _userService;

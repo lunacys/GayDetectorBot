@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+namespace GayDetectorBot.WebApi.Tg.Handlers;
 
 [MessageHandler("роли", "получить роли пользователя")]
 public class HandlerGetRoles : HandlerBase

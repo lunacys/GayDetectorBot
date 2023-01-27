@@ -1,4 +1,4 @@
-﻿namespace GayDetectorBot.WebApi.Models;
+﻿namespace GayDetectorBot.WebApi.Tg;
 
 [Flags]
 public enum MemberStatusPermission

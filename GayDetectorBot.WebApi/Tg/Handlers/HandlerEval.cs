@@ -1,9 +1,10 @@
 ﻿using GayDetectorBot.WebApi.Services.Tg.Helpers;
+using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using Jint.Runtime;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+namespace GayDetectorBot.WebApi.Tg.Handlers;
 
 [MessageHandler("eval", "выполнить скрипт на JavaScript", "скрипт")]
 public class HandlerEval : HandlerBase<string>

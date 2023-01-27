@@ -1,13 +1,11 @@
 ﻿using GayDetectorBot.WebApi.Configuration;
-using GayDetectorBot.WebApi.Data.Repositories;
-using GayDetectorBot.WebApi.Models;
 using GayDetectorBot.WebApi.Models.Tg;
+using GayDetectorBot.WebApi.Services.Tg;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using File = System.IO.File;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+namespace GayDetectorBot.WebApi.Tg.Handlers;
 
 [MessageHandler("фото", "скинуть случайную сохранённую фотку", MemberStatusPermission.All)]
 public class HandlerRandomPhoto : HandlerBase

@@ -8,6 +8,11 @@ using System.Text;
 
 namespace GayDetectorBot.WebApi.Services.Auth;
 
+public interface ITokenGeneratorService
+{
+    string Generate(User user);
+}
+
 public class TokenGeneratorService : ITokenGeneratorService
 {
     private readonly AppSettings _appSettings;

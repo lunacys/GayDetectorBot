@@ -1,4 +1,4 @@
-﻿using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+﻿using GayDetectorBot.WebApi.Tg;
 using Telegram.Bot;
 
 namespace GayDetectorBot.WebApi;

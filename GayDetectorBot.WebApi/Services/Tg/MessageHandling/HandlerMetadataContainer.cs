@@ -1,6 +1,13 @@
 ﻿using System.Reflection;
+using GayDetectorBot.WebApi.Tg;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+
+public interface IHandlerMetadataContainer
+{
+    IEnumerable<string> GetReservedCommands();
+    IEnumerable<(Type Type, MessageHandlerAttribute Metadata)> GetHandlerTypes();
+}
 
 public class HandlerMetadataContainer : IHandlerMetadataContainer
 {

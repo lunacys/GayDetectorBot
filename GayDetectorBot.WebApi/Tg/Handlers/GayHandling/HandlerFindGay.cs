@@ -1,8 +1,7 @@
 ﻿using GayDetectorBot.WebApi.Data.Repositories;
-using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
+namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
     [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
     public class HandlerFindGay : HandlerBase
