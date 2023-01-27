@@ -2,14 +2,14 @@
 using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
 {
     [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
     public class HandlerFindGay : HandlerBase
     {
         private static List<string[]> _phrases = new List<string[]>
         {
-            new[] 
+            new[]
             {
                 "Woob-woob, that\'s the sound of the pidor police!",
                 "Выезжаю на место...",
@@ -96,7 +96,7 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
                     throw Error($"Пидор не обнаружен");
                 }
             }
-            
+
             var firstMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));
             var secondMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));
             var thirdMsg = GetRandomPhrase(_random.Next(0, _phrases.Count));

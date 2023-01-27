@@ -2,7 +2,7 @@
 using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers;
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.CustomCommands;
 
 [MessageHandler("кто-добавил", "узнать, кто добавил кастомную команду", MemberStatusPermission.All, "название-команды")]
 public class HandlerWhoAdded : HandlerBase<string>
@@ -37,7 +37,7 @@ public class HandlerWhoAdded : HandlerBase<string>
             return;
         }
 
-        if (!(await _commandRepository.CommandExists(prefix, chatId)))
+        if (!await _commandRepository.CommandExists(prefix, chatId))
         {
             throw Error($"Команды `{prefix}` не существует!");
         }

@@ -2,7 +2,7 @@
 using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
 {
     [MessageHandler("уберименя", "убрать из списка рулетки - команда только для настоящих пидоров", MemberStatusPermission.All)]
     public class HandlerRemoveMe : HandlerBase
@@ -27,7 +27,7 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
             {
                 throw Error($"Неизвестный пользователь");
             }
-            
+
             await SendTextAsync($"Ну ты и пидор, @{message.From.Username}. Убрал тебя.", message.MessageId);
         }
     }

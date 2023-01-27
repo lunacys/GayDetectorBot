@@ -1,7 +1,7 @@
 ﻿using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.CustomCommands
 {
     [MessageHandler("команды", "список всех пользовательских команд", MemberStatusPermission.All)]
     public class HandlerCommandList : HandlerBase

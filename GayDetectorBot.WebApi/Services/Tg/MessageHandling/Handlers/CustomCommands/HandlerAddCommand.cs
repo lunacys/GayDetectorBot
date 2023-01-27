@@ -2,7 +2,7 @@
 using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.CustomCommands
 {
     [MessageHandler("добавить-команду", "добавить кастомную команду", MemberStatusPermission.All, "название-команды", "текстовое содержание")]
     public class HandlerAddCommand : HandlerBase<string, string>
@@ -25,7 +25,7 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
             {
                 throw Error("Мало данных! Надо два параметра!");
             }
-            
+
             if (!prefix.StartsWith('!'))
             {
                 throw Error("Команды должны начинаться со знака `!`");
@@ -49,7 +49,7 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
 
                 if (!_commandMapService.ContainsKey(chatId))
                 {
-                    _commandMapService.SetByChatId(chatId, new List<PrefixContent>()); 
+                    _commandMapService.SetByChatId(chatId, new List<PrefixContent>());
                 }
 
                 _commandMapService.GetByChatId(chatId).Add(new PrefixContent

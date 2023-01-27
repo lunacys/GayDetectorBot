@@ -2,7 +2,7 @@
 using GayDetectorBot.WebApi.Models;
 using Telegram.Bot.Types;
 
-namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers
+namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling.Handlers.GayHandling
 {
     [MessageHandler("пидордня", "стать участником рулетки", MemberStatusPermission.All)]
     public class HandlerGayOfTheDay : HandlerBase
