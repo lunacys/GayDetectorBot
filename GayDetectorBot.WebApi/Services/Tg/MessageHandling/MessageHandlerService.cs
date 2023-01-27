@@ -19,7 +19,7 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly ILogger<MessageHandlerService> _logger;
     private readonly ICommandMapService _commandMap;
     
-    private readonly IEnumerable<(Type Type, MessageHandlerAttribute Metadata)> _handlerTypes;
+    private readonly IEnumerable<(Type Type, HandlerMetadata Metadata)> _handlerTypes;
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IJsEvaluatorService _jsEvaluator;
@@ -233,23 +233,23 @@ public class MessageHandlerService : IMessageHandlerService
     {
         foreach (var handlerType in _handlerTypes)
         {
-            if (handlerType.Metadata.CommandAlias == command)
+            if (handlerType.Metadata.Common.CommandAlias == command)
             {
                 try
                 {
                     if (!(await CheckPermissions(handlerType.Metadata, client, chatId, message)))
                         throw new TelegramCommandException("А тебе низя такое делать");
 
-                    if (handlerType.Metadata.HasParameters && handlerType.Metadata.ParameterCount > 1)
+                    if (handlerType.Metadata.Common.HasParameters && handlerType.Metadata.Common.ParameterCount > 1)
                     {
-                        var paramList = new List<string>(handlerType.Metadata.ParameterCount);
+                        var paramList = new List<string>(handlerType.Metadata.Common.ParameterCount);
                         var lastIndex = 0;
                         var curIndex = 0;
 
                         // Parsing parameters
                         while (data != null && lastIndex < data.Length)
                         {
-                            if (curIndex + 1 >= handlerType.Metadata.ParameterCount)
+                            if (curIndex + 1 >= handlerType.Metadata.Common.ParameterCount)
                             {
                                 var str = data.Substring(lastIndex);
                                 paramList.Add(str);
@@ -264,12 +264,12 @@ public class MessageHandlerService : IMessageHandlerService
                             }
                         }
 
-                        _logger.LogInformation($"Executing command '{handlerType.Metadata.CommandAlias}'");
+                        _logger.LogInformation($"Executing command '{handlerType.Metadata.Common.CommandAlias}'");
                         await Handle(handlerType.Type, chatId, client, message, paramList.ToArray());
                     }
                     else // ParameterCount <= 1
                     {
-                        _logger.LogInformation($"Executing command '{handlerType.Metadata.CommandAlias}'");
+                        _logger.LogInformation($"Executing command '{handlerType.Metadata.Common.CommandAlias}'");
                         await Handle(handlerType.Type, chatId, client, message, data?.Trim() ?? "");
                     }
                 }
@@ -343,9 +343,9 @@ public class MessageHandlerService : IMessageHandlerService
         await service.HandleAsync(message, data);
     }
 
-    private async Task<bool> CheckPermissions(MessageHandlerAttribute metadata, ITelegramBotClient client, long chatId, Message message)
+    private async Task<bool> CheckPermissions(HandlerMetadata metadata, ITelegramBotClient client, long chatId, Message message)
     {
-        var permissions = metadata.Permission;
+        var permissions = metadata.Permission?.Permission ?? MemberStatusPermission.Creator | MemberStatusPermission.Administrator;
         var user = await client.GetChatMemberAsync(chatId, message.From!.Id);
 
         _logger.LogInformation($"Permissions of user {message.From.Username} ({message.From.Id}): {user.Status}");
@@ -399,15 +399,18 @@ public class MessageHandlerService : IMessageHandlerService
         {
             result += "`!";
 
-            if (data.Metadata.HasParameters)
+            if (data.Metadata.Common.HasParameters)
             {
-                result += $"{data.Metadata.CommandAlias} ";
-                result += string.Join(' ', data.Metadata.Parameters.Select(s => $"<{s}>"));
-                result += "` - " + data.Metadata.Description;
+                result += $"{data.Metadata.Common.CommandAlias} ";
+                result += string.Join(' ', data.Metadata.Common.Parameters.Select(s => $"<{s}>"));
+                if (data.Metadata.Metadata != null)
+                    result += "` - " + data.Metadata.Metadata.Description;
             }
             else
             {
-                result += $"{data.Metadata.CommandAlias}` - {data.Metadata.Description}";
+                result += $"{data.Metadata.Common.CommandAlias}`";
+                if (data.Metadata.Metadata != null)
+                    result += $" - {data.Metadata.Metadata.Description}";
             }
 
             result += "\n";

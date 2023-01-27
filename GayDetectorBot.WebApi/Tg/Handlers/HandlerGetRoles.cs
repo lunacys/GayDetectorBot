@@ -3,7 +3,8 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers;
 
-[MessageHandler("роли", "получить роли пользователя")]
+[MessageHandler("роли")]
+[MessageHandlerMetadata("получить роли пользователя")]
 public class HandlerGetRoles : HandlerBase
 {
     public override async Task HandleAsync(Message message, params string[] parsedData)

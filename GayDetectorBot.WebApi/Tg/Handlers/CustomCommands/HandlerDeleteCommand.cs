@@ -4,7 +4,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands
 {
-    [MessageHandler("удалить-команду", MemberStatusPermission.All, "удалить кастомную команду", "название-команды")]
+    [MessageHandler("удалить-команду", "название-команды")]
+    [MessageHandlerMetadata("удалить кастомную команду")]
+    [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerDeleteCommand : HandlerBase<string>
     {
         private readonly ICommandMapService _commandMapService;

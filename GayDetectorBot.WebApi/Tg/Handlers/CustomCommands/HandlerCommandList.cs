@@ -3,7 +3,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands
 {
-    [MessageHandler("команды", "список всех пользовательских команд", MemberStatusPermission.All)]
+    [MessageHandler("команды")]
+    [MessageHandlerMetadata("список всех пользовательских команд")]
+    [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerCommandList : HandlerBase
     {
         private readonly ICommandMapService _commandMapService;

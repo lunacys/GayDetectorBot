@@ -6,7 +6,8 @@ using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers;
 
-[MessageHandler("eval", "выполнить скрипт на JavaScript", "скрипт")]
+[MessageHandler("eval", "скрипт")]
+[MessageHandlerMetadata("выполнить скрипт на JavaScript")]
 public class HandlerEval : HandlerBase<string>
 {
     private readonly IJsEvaluatorService _jsEvaluatorService;

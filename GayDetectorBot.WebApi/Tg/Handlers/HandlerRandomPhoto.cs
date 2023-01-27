@@ -7,7 +7,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers;
 
-[MessageHandler("фото", "скинуть случайную сохранённую фотку", MemberStatusPermission.All)]
+[MessageHandler("фото")]
+[MessageHandlerMetadata("скинуть случайную сохранённую фотку")]
+[MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerRandomPhoto : HandlerBase
 {
     private readonly TelegramOptions _options;

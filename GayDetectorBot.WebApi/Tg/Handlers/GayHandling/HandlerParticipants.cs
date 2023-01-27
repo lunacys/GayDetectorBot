@@ -3,7 +3,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
-    [MessageHandler("участники", "список всех участников", MemberStatusPermission.All)]
+    [MessageHandler("участники")]
+    [MessageHandlerMetadata("список всех участников")]
+    [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerParticipants : HandlerBase
     {
         private readonly IParticipantRepository _participantRepository;

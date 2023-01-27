@@ -3,7 +3,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
-    [MessageHandler("топпидоров", "узнать топ пидоров за всё время", MemberStatusPermission.All)]
+    [MessageHandler("топпидоров")]
+    [MessageHandlerMetadata("узнать топ пидоров за всё время")]
+    [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerGayTop : HandlerBase
     {
         private readonly IGayRepository _gayRepository;

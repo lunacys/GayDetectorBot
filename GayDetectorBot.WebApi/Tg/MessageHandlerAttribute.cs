@@ -3,46 +3,54 @@
 public static class CommandCategories
 {
     public const string Gays = "Пидорство";
+    public const string DickSize = "Размер достоинства";
     public const string Commands = "Кастомные команды";
-    public const string Utils = "Всякое разное";
+    public const string Common = "Всякое разное";
 }
 
-[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class MessageHandlerAttribute : Attribute
 {
-    public string CommandAlias { get; }
-    public string? Description { get; }
-    public MemberStatusPermission Permission { get; }
-    public bool HasParameters => Parameters.Any();
+    public string CommandAlias { get; set; }
+    public bool HasParameters => Parameters.Count > 0;
     public int ParameterCount => Parameters.Count;
     public List<string> Parameters { get; }
 
     public MessageHandlerAttribute(string commandAlias)
-        : this(commandAlias, null, MemberStatusPermission.Creator | MemberStatusPermission.Administrator)
+        : this(commandAlias, null)
     { }
 
-    public MessageHandlerAttribute(string commandAlias, string? description)
-        : this(commandAlias, description, null)
-    { }
-    
-
-    public MessageHandlerAttribute(string commandAlias, string? description = null, MemberStatusPermission permissions = MemberStatusPermission.Creator | MemberStatusPermission.Administrator)
-        : this(commandAlias, description, permissions, null)
-    { }
-
-    public MessageHandlerAttribute(string commandAlias, string? description = null, params string[]? parameters)
-        : this(commandAlias, description, MemberStatusPermission.Creator, parameters)
-    { }
-
-    public MessageHandlerAttribute(string commandAlias, MemberStatusPermission permissions = MemberStatusPermission.Creator | MemberStatusPermission.Administrator, params string[]? parameters)
-        : this(commandAlias, null, permissions, parameters)
-    { }
-
-    public MessageHandlerAttribute(string commandAlias, string? description = null, MemberStatusPermission permissions = MemberStatusPermission.Creator | MemberStatusPermission.Administrator, params string[]? parameters)
+    public MessageHandlerAttribute(string commandAlias, params string[]? parameters)
     {
         CommandAlias = commandAlias;
-        Description = description;
-        Permission = permissions;
         Parameters = parameters == null ? new List<string>() : parameters.ToList();
+    }
+}
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public sealed class MessageHandlerMetadataAttribute : Attribute
+{
+    public string? Description { get; set; }
+    public string? Category { get; set; }
+
+    public MessageHandlerMetadataAttribute(string? description = null, string? category = null)
+    {
+        Description = description;
+        Category = category ?? CommandCategories.Common;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public sealed class MessageHandlerPermissionAttribute : Attribute
+{
+    public MemberStatusPermission Permission { get; set; } =
+        MemberStatusPermission.Creator | MemberStatusPermission.Administrator;
+
+    public MessageHandlerPermissionAttribute()
+    { }
+
+    public MessageHandlerPermissionAttribute(MemberStatusPermission permissions)
+    {
+        Permission = permissions;
     }
 }

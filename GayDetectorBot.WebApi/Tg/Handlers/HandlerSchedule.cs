@@ -4,8 +4,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers;
 
-[MessageHandler("таймер", "добавить таймер на нужное время с напоминалкой. Формат времени: hh:mm[:ss]", MemberStatusPermission.All, "через_сколько",
-    "напоминалка")]
+[MessageHandler("таймер", "через_сколько", "напоминалка")]
+[MessageHandlerMetadata("добавить таймер на нужное время с напоминалкой. Формат времени: hh:mm[:ss]")]
+[MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerSchedule : HandlerBase<string, string>
 {
     private readonly ISchedulerService _schedulerService;

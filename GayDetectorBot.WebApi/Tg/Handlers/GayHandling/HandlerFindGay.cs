@@ -3,7 +3,9 @@ using Telegram.Bot.Types;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 {
-    [MessageHandler("ктопидор", "узнать пидора дня", MemberStatusPermission.All)]
+    [MessageHandler("ктопидор")]
+    [MessageHandlerMetadata("узнать пидора дня")]
+    [MessageHandlerPermission(MemberStatusPermission.All)]
     public class HandlerFindGay : HandlerBase
     {
         private static List<string[]> _phrases = new List<string[]>

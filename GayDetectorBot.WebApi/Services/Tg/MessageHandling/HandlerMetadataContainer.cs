@@ -6,19 +6,19 @@ namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 public interface IHandlerMetadataContainer
 {
     IEnumerable<string> GetReservedCommands();
-    IEnumerable<(Type Type, MessageHandlerAttribute Metadata)> GetHandlerTypes();
+    IEnumerable<(Type Type, HandlerMetadata Metadata)> GetHandlerTypes();
 }
 
 public class HandlerMetadataContainer : IHandlerMetadataContainer
 {
     private readonly List<string> _reservedCommands;
-    private readonly List<(Type type, MessageHandlerAttribute attribute)> _handlerTypes;
+    private readonly List<(Type type, HandlerMetadata metadata)> _handlerTypes;
 
     public HandlerMetadataContainer()
     {
         var asm = Assembly.GetExecutingAssembly();
         _handlerTypes = GetTypesWithAttribute(asm).ToList();
-        _reservedCommands = _handlerTypes.Select(tuple => "!" + tuple.Item2.CommandAlias.TrimEnd()).ToList();
+        _reservedCommands = _handlerTypes.Select(tuple => "!" + tuple.metadata.Common.CommandAlias.TrimEnd()).ToList();
     }
 
     public IEnumerable<string> GetReservedCommands()
@@ -26,19 +26,29 @@ public class HandlerMetadataContainer : IHandlerMetadataContainer
         return _reservedCommands;
     }
 
-    public IEnumerable<(Type Type, MessageHandlerAttribute Metadata)> GetHandlerTypes()
+    public IEnumerable<(Type Type, HandlerMetadata Metadata)> GetHandlerTypes()
     {
         return _handlerTypes;
     }
 
-    public static IEnumerable<(Type type, MessageHandlerAttribute attribute)> GetTypesWithAttribute(Assembly assembly)
+    public static IEnumerable<(Type type, HandlerMetadata metadata)> GetTypesWithAttribute(Assembly assembly)
     {
         foreach (var type in assembly.GetTypes())
         {
-            var attr = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
+            var attr = type.GetCustomAttribute<MessageHandlerAttribute>(false);
 
-            if (attr.Length > 0)
-                yield return (type, attr[0] as MessageHandlerAttribute)!;
+            if (attr != null)
+            {
+                var meta = type.GetCustomAttribute<MessageHandlerMetadataAttribute>(false);
+                var perm = type.GetCustomAttribute<MessageHandlerPermissionAttribute>(false);
+
+                yield return (type, new HandlerMetadata
+                {
+                    Common = attr,
+                    Metadata = meta,
+                    Permission = perm
+                })!;
+            }
         }
     }
 }
