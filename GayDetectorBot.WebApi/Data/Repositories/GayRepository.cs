@@ -3,6 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GayDetectorBot.WebApi.Data.Repositories;
 
+public interface IGayRepository
+{
+    Task AddGay(Participant participant);
+    Task<IEnumerable<Gay>> RetrieveGays(long chatId);
+
+}
+
 public class GayRepository : IGayRepository
 {
     private readonly GayDetectorBotContext _context;
