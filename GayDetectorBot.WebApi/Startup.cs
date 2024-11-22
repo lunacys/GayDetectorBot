@@ -27,15 +27,19 @@ public class Startup
         var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
         var sqliteConnectionString = Configuration.GetConnectionString("SqliteConnection");
 
+        
+
         /*if (!string.IsNullOrEmpty(sqliteConnectionString))
         {
             services.AddDbContext<GayDetectorBotContext>(builder => builder.UseSqlite(sqliteConnectionString));
         }
         else*/
         {
+            services.AddNpgsqlDataSource(dbConnectionString);
             services.AddDbContext<GayDetectorBotContext>(builder =>
             {
-                builder.UseNpgsql(dbConnectionString);
+                //builder.UseNpgsql(dbConnectionString);
+                builder.UseNpgsql();
             }, ServiceLifetime.Singleton);
         }
 
@@ -79,6 +83,8 @@ public class Startup
                 };
             });
         });
+
+        services.AddHealthChecks().AddNpgSql();
 
         services.AddControllers().AddNewtonsoftJson();
         services.AddAuthorization();
