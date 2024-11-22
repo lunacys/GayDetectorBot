@@ -1,15 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>25b865fb-daf7-43b5-90fb-2b78d079f784</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	  <PublishSingleFile>true</PublishSingleFile>
-	  <SelfContained>true</SelfContained>
+	  <PublishSingleFile>false</PublishSingleFile>
+	  <SelfContained>false</SelfContained>
 	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	  <PublishReadyToRun>true</PublishReadyToRun>
+	  <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,26 +20,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Telegram.Bot" Version="19.0.0-preview.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="22.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Models\Auth\" />
     <Folder Include="Models\Users\" />
     <Folder Include="Configuration\" />
@@ -44,10 +48,6 @@
     <Folder Include="Services\Auth\" />
     <Folder Include="Services\Tg\Helpers\" />
     <Folder Include="Services\UserManagement\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\3rdParty\jint\Jint\Jint.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,6 +61,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="SeedData\DB_Participants.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="wait-for-postgres.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

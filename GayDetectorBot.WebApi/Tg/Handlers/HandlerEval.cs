@@ -1,4 +1,4 @@
-﻿using GayDetectorBot.WebApi.Services.Tg.Helpers;
+﻿/*using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
 using Jint.Runtime;
 using Telegram.Bot.Types;
@@ -127,4 +127,4 @@ public class HandlerEval : HandlerBase<string>
             }
         }
     }
-}
+}*/

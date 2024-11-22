@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GayDetectorBot.WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class StartOver : Migration
+    public partial class StartOverAgain : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

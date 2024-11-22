@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GayDetectorBot.WebApi.Migrations
 {
     [DbContext(typeof(GayDetectorBotContext))]
-    [Migration("20230124163755_StartOver")]
-    partial class StartOver
+    [Migration("20241122100445_StartOverAgain")]
+    partial class StartOverAgain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

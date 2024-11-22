@@ -30,6 +30,6 @@ public class HandlerRandomPhoto : HandlerBase
         if (rnd == null)
             throw Error("Нету фоток");
 
-        await Client.SendPhotoAsync(chatId, new InputFileId(rnd.FileId), replyToMessageId: message.MessageId);
+        await Client.SendPhoto(chatId, new InputFileId(rnd.FileId), replyParameters: new ReplyParameters { MessageId = message.MessageId });
     }
 }

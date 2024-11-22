@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - aspnetcoreapp-network
+  gaydetectorbot.webapi:
+    image: ${DOCKER_REGISTRY-}gaydetectorbotwebapi
+    #entrypoint: sh -c "ls && chmod +x ./wait-for-postgres.sh && ./wait-for-postgres.sh postgres:5432"
+    build:
+      context: .
+      dockerfile: GayDetectorBot.WebApi/Dockerfile
+    networks:
+      - aspnetcoreapp-network
+    depends_on:
+      - db
+networks:
+  aspnetcoreapp-network:
+    driver: bridge

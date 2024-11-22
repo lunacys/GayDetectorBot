@@ -10,6 +10,7 @@
 	  <SelfContained>true</SelfContained>
 	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	  <PublishReadyToRun>true</PublishReadyToRun>
+	  <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using GayDetectorBot.WebApi.Models.Tg;
+﻿using System.Text;
+using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Tg;
 using Telegram.Bot;
@@ -180,10 +181,10 @@ public class MessageHandlerService : IMessageHandlerService
 
         string dest = basePath + Utils.GenerateRandomString() + extension;
 
-        Directory.CreateDirectory(Path.GetDirectoryName(dest));
+        Directory.CreateDirectory(Path.GetDirectoryName(dest) ?? "");
 
         await using Stream fileStream = File.OpenWrite(dest);
-        await client.DownloadFileAsync(filePath, fileStream);
+        await client.DownloadFile(filePath, fileStream);
     }
 
     private async Task HandleText(Message message, ITelegramBotClient client)
@@ -311,27 +312,28 @@ public class MessageHandlerService : IMessageHandlerService
                 {
                     _logger.LogInformation($"Evaluating custom JS command '{lower}' with content: {c}");
 
-                    var evalContent = c.Replace("!eval ", "");
+                    /*var evalContent = c.Replace("!eval ", "");
                     var res = await _jsEvaluator.EvaluateAsync(evalContent, engine =>
                     {
                         engine.SetValue("SendCommand", async (string snd) =>
                             {
                                 var cmd = _commandMap.GetByChatId(chatId).Find(co => co.Prefix == snd);
                                 if (cmd != null)
-                                    await client.SendTextMessageAsync(chatId, cmd.Content, parseMode: ParseMode.Html);
+                                    //await client.SendTextMessageAsync(chatId, cmd.Content, parseMode: ParseMode.Html);
+                                    await client.SendMessage(chatId, cmd.Content, parseMode: ParseMode.Html);
                             }
                         );
-                    });
+                    });*/
 
-                    await client.SendTextMessageAsync(message.Chat.Id, res ?? "пусто", parseMode: ParseMode.Html,
-                        replyToMessageId: message.MessageId);
+                    //await client.SendMessage(message.Chat.Id, res ?? "Пусто", parseMode: ParseMode.Html, replyParameters: new ReplyParameters { MessageId = message.MessageId });
+                    await client.SendMessage(message.Chat.Id, "Пока не работает", parseMode: ParseMode.Html, replyParameters: new ReplyParameters { MessageId = message.MessageId });
                 }
                 else
                 {
                     _logger.LogInformation($"Executing custom command '{lower}' with content: {c}");
 
-                    await client.SendTextMessageAsync(message.Chat.Id, c, parseMode: ParseMode.Html,
-                        replyToMessageId: message.MessageId);
+                    await client.SendMessage(message.Chat.Id, c, parseMode: ParseMode.Html,
+                        replyParameters: new ReplyParameters() { MessageId = message.MessageId });
                 }
             }
         }
@@ -346,7 +348,7 @@ public class MessageHandlerService : IMessageHandlerService
     private async Task<bool> CheckPermissions(HandlerMetadata metadata, ITelegramBotClient client, long chatId, Message message)
     {
         var permissions = metadata.Permission?.Permission ?? MemberStatusPermission.Creator | MemberStatusPermission.Administrator;
-        var user = await client.GetChatMemberAsync(chatId, message.From!.Id);
+        var user = await client.GetChatMember(chatId, message.From!.Id);
 
         _logger.LogInformation($"Permissions of user {message.From.Username} ({message.From.Id}): {user.Status}");
 
@@ -376,24 +378,24 @@ public class MessageHandlerService : IMessageHandlerService
 
     private static (string, int) ReadUntilWhitespace(string str, int startIndex = 0)
     {
-        var result = "";
+        var result = new StringBuilder();
 
         for (int i = startIndex; i < str.Length; i++)
         {
             if (str[i] == ' ' || str[i] == '\n')
-                return (result, i);
+                return (result.ToString(), i);
 
-            result += str[i];
+            result.Append(str[i]);
         }
 
-        return (result, str.Length);
+        return (result.ToString(), str.Length);
     }
 
     private string GetHelpMessage()
     {
         var mhc = _handlerTypes.ToList();
 
-        var result = "Список основных команд:\n\n";
+        var result = new StringBuilder("Список основных команд:\n\n");
 
         var categories = new string[]
         {
@@ -416,32 +418,32 @@ public class MessageHandlerService : IMessageHandlerService
             if (cmds.Count == 0)
                 continue;
             
-            result += $" > **{category}**: \n\n";
+            result.Append($" > **{category}**: \n\n");
 
             foreach (var data in cmds)
             {
-                result += " - `!";
+                result.Append(" - `!");
 
                 if (data.Common.HasParameters)
                 {
-                    result += $"{data.Common.CommandAlias} ";
-                    result += string.Join(' ', data.Common.Parameters.Select(s => $"<{s}>"));
+                    result.Append($"{data.Common.CommandAlias} ");
+                    result.Append(string.Join(' ', data.Common.Parameters.Select(s => $"<{s}>")));
                     if (data.Metadata != null)
-                        result += "` - " + data.Metadata.Description;
+                        result.Append("` - " + data.Metadata.Description);
                 }
                 else
                 {
-                    result += $"{data.Common.CommandAlias}`";
+                    result.Append($"{data.Common.CommandAlias}`");
                     if (data.Metadata != null)
-                        result += $" - {data.Metadata.Description}";
+                        result.Append($" - {data.Metadata.Description}");
                 }
 
-                result += "\n";
+                result.Append("\n");
             }
 
-            result += "==============\n\n";
+            result.Append("==============\n\n");
         }
 
-        return result;
+        return result.ToString();
     }
 }

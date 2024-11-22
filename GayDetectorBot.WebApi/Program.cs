@@ -4,6 +4,7 @@ using GayDetectorBot.WebApi.Data;
 using GayDetectorBot.WebApi.Services.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Services.Tg.MessageHandling;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace GayDetectorBot.WebApi
@@ -14,6 +15,7 @@ namespace GayDetectorBot.WebApi
         {
             var host = CreateHostBuilder(args).Build();
 
+            await ApplyMigrations(host);
             await InitializeAsync(host);
 
             await host.RunAsync();
@@ -21,6 +23,19 @@ namespace GayDetectorBot.WebApi
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>());
+
+        private static async Task ApplyMigrations(IHost host)
+        {
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            var context = services.GetRequiredService<GayDetectorBotContext>();
+            var pending = await context.Database.GetPendingMigrationsAsync();
+            if (pending.Any())
+            {
+                await context.Database.MigrateAsync();
+            }
+        }
 
         private static async Task InitializeAsync(IHost host)
         {

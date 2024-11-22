@@ -138,7 +138,7 @@ namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
         {
             var r = _random.Next(0, 3);
 
-            return _phrases[r][index];
+            return _phrases[index][r];
         }
     }
 }

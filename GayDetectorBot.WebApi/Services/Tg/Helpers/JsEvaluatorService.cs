@@ -1,15 +1,15 @@
-﻿using Jint;
+﻿//using Jint;
 
 namespace GayDetectorBot.WebApi.Services.Tg.Helpers;
 
 public interface IJsEvaluatorService
 {
-    Task<string?> EvaluateAsync(string code, Action<Engine> setupFunc);
+    //Task<string?> EvaluateAsync(string code, Action<Engine> setupFunc);
 }
 
 public class JsEvaluatorService : IJsEvaluatorService
 {
-    public Task<string?> EvaluateAsync(string code, Action<Engine> setupFunc)
+    /*public Task<string?> EvaluateAsync(string code, Action<Engine> setupFunc)
     {
         return Task.Run(() =>
         {
@@ -42,5 +42,5 @@ public class JsEvaluatorService : IJsEvaluatorService
 
             return result?.ToString() ?? null;
         });
-    }
+    }*/
 }
