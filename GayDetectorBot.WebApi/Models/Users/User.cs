@@ -11,10 +11,12 @@ public class User
     public int Id { get; set; }
     [Required]
     [ProtectedPersonalData]
+    [StringLength(256)]
     public string Username { get; set; }
     [Required]
     [ProtectedPersonalData]
     [EmailAddress]
+    [StringLength(256)]
     public string Email { get; set; }
     [Required]
     [DataType(DataType.Password)]

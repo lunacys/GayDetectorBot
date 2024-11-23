@@ -145,9 +145,9 @@ public class Startup
 
         app.Use(async (context, next) =>
         {
-            context.Response.Headers.Add("X-Xss-Protection", "1"); // XSS Protection
-            context.Response.Headers.Add("X-Content-Type-Options", "nosniff"); // No Sniff Protection
-            context.Response.Headers.Add("X-Frame-Options", "DENY"); // Deny Frame Protection
+            context.Response.Headers.Append("X-Xss-Protection", "1"); // XSS Protection
+            context.Response.Headers.Append("X-Content-Type-Options", "nosniff"); // No Sniff Protection
+            context.Response.Headers.Append("X-Frame-Options", "DENY"); // Deny Frame Protection
             await next();
         });
 

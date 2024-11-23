@@ -13,4 +13,4 @@ obj/
 /GayDetectorBot.WebApi/logs
 /GayDetectorBot.WebApi/SeedData
 /GayDetectorBot.WebApi/downloads
-data
+/data
