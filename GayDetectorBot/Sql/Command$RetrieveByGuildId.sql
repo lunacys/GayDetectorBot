@@ -1,1 +1,0 @@
-﻿SELECT * FROM CustomCommands WHERE GuildId = $GuildId
