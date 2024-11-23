@@ -3,10 +3,7 @@ services:
     image: postgres
     volumes:
       - ./data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=app
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+    env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
