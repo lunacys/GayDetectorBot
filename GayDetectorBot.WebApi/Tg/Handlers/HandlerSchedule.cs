@@ -41,7 +41,7 @@ public class HandlerSchedule : HandlerBase<string, string>
             ChatId = chatId
         };
 
-        _schedulerService.Schedule(result, c, (context) => SendTextAsync($"@{message.From.Username}, напоминаю тебе:\n" + context.Message, context.MessageId));
+        _schedulerService.Schedule(result, c, (context) => SendTextAsync($"@{message.From?.Username}, напоминаю тебе:\n" + context.Message, context.MessageId));
 
         await SendTextAsync($"Таймер сработает через {FormatTime(result.Hours)}:{FormatTime(result.Minutes)}:{FormatTime(result.Seconds)}", msgId);
     }

@@ -37,7 +37,7 @@ public class TelegramService : ITelegramService
     {
         _telegramClient = new TelegramBotClient(_tgOptions.Token.Trim());
 
-        var me = await _telegramClient.GetMeAsync();
+        var me = await _telegramClient.GetMe();
         _logger.LogInformation($"BOT DATA: {me.Id} {me.FirstName} {me.LastName}");
 
         if (_tgOptions.UseWebhooks)

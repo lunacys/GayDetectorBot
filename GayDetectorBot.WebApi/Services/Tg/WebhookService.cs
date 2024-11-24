@@ -35,7 +35,7 @@ public class WebhookService : IHostedService
 
         if (_telegramOptions.UseWebhooks)
         {
-            await client.Client.SetWebhookAsync(
+            await client.Client.SetWebhook(
                 url: webhookAddress,
                 allowedUpdates: Array.Empty<UpdateType>(),
                 secretToken: _telegramOptions.SecretToken,
@@ -53,6 +53,6 @@ public class WebhookService : IHostedService
         var client = scope.ServiceProvider.GetRequiredService<ITelegramService>();
 
         _logger.LogInformation("Removing webhook");
-        await client.Client.DeleteWebhookAsync(cancellationToken: cancellationToken);
+        await client.Client.DeleteWebhook(cancellationToken: cancellationToken);
     }
 }

@@ -31,7 +31,7 @@ namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
                 throw Error($"Неизвестный пользователь");
             }
 
-            var chatMember = await Client.GetChatMemberAsync(chatId, from.Id);
+            var chatMember = await Client.GetChatMember(chatId, from.Id);
 
             if (chatMember.Status != ChatMemberStatus.Administrator && chatMember.Status != ChatMemberStatus.Creator)
             {

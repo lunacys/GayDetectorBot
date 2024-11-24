@@ -171,7 +171,7 @@ public class MessageHandlerService : IMessageHandlerService
 
     private async Task DownloadFile(string fileId, string basePath, ITelegramBotClient client)
     {
-        var fileInfo = await client.GetFileAsync(fileId);
+        var fileInfo = await client.GetFile(fileId);
         var filePath = fileInfo.FilePath;
 
         if (filePath == null)
@@ -206,7 +206,7 @@ public class MessageHandlerService : IMessageHandlerService
 
         if (lower == "!помоги")
         {
-            await client.SendTextMessageAsync(chatId, _helpMessage, parseMode: ParseMode.Markdown);
+            await client.SendMessage(chatId, _helpMessage, parseMode: ParseMode.Markdown);
             return;
         }
 
@@ -276,12 +276,12 @@ public class MessageHandlerService : IMessageHandlerService
                 }
                 catch (TelegramCommandException e)
                 {
-                    await client.SendTextMessageAsync(chatId, "Ошибка: " + e.Message, parseMode: ParseMode.Markdown);
+                    await client.SendMessage(chatId, "Ошибка: " + e.Message, parseMode: ParseMode.Markdown);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e.ToString());
-                    await client.SendTextMessageAsync(chatId, "Непредвиденная ошибка: " + e.Message,
+                    await client.SendMessage(chatId, "Непредвиденная ошибка: " + e.Message,
                         parseMode: ParseMode.Markdown);
                 }
 

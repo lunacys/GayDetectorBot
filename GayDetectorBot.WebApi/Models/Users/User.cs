@@ -12,12 +12,13 @@ public class User
     [Required]
     [ProtectedPersonalData]
     [StringLength(256)]
-    public string Username { get; set; }
+    public required string Username { get; set; }
     [Required]
     [ProtectedPersonalData]
     [EmailAddress]
     [StringLength(256)]
-    public string Email { get; set; }
+    public required string Email { get; set; }
+
     [Required]
     [DataType(DataType.Password)]
     [JsonIgnore]

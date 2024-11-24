@@ -26,7 +26,7 @@ public class CommandParser
         var lower = text.ToLower().Trim();
 
         // Take the first word which will be the command, it must start with ! and end with a whitespace
-        var whitespaceIndex = lower.IndexOfAny(new[] { ' ', '\n' });
+        var whitespaceIndex = lower.IndexOfAny([' ', '\n']);
         var command = lower;
         if (whitespaceIndex >= 0)
             command = lower.Substring(0, whitespaceIndex);
@@ -34,7 +34,7 @@ public class CommandParser
         command = command.Remove(0, 1);
         string? data;
 
-        var i = text.IndexOfAny(new[] { ' ', '\n' });
+        var i = text.IndexOfAny([' ', '\n']);
         if (i > 0)
             data = text.Substring(i + 1);
         else

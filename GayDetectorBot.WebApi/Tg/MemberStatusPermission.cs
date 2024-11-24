@@ -10,5 +10,6 @@ public enum MemberStatusPermission
     Left = 8,
     Kicked = 16,
     Restricted = 32,
-    All = Creator | Administrator | Member | Left | Kicked | Restricted
+    All = Creator | Administrator | Member | Left | Kicked | Restricted,
+    Regular = Creator | Administrator | Member,
 }

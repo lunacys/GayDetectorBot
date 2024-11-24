@@ -27,7 +27,10 @@ public class Startup
         var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
         var sqliteConnectionString = Configuration.GetConnectionString("SqliteConnection");
 
-        
+        if (string.IsNullOrEmpty(dbConnectionString))
+        {
+            throw new ArgumentException("No DB connection string provided", nameof(dbConnectionString));
+        }
 
         /*if (!string.IsNullOrEmpty(sqliteConnectionString))
         {

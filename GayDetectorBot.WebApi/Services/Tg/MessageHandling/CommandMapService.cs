@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using GayDetectorBot.WebApi.Data.Repositories;
+﻿using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Tg;
 
 namespace GayDetectorBot.WebApi.Services.Tg.MessageHandling;
@@ -19,18 +18,16 @@ public class CommandMapService : ICommandMapService
 {
     private readonly Dictionary<long, List<PrefixContent>> _customCommandMap;
     private readonly ICommandRepository _commandRepository;
-    private readonly IHandlerMetadataContainer _handlerMetadataContainer;
 
     public IEnumerable<string> ReservedCommands { get; }
 
     public CommandMapService(ICommandRepository commandRepository, IHandlerMetadataContainer handlerMetadataContainer)
     {
         _commandRepository = commandRepository;
-        _handlerMetadataContainer = handlerMetadataContainer;
 
         _customCommandMap = new Dictionary<long, List<PrefixContent>>();
 
-        ReservedCommands = _handlerMetadataContainer.GetReservedCommands();
+        ReservedCommands = handlerMetadataContainer.GetReservedCommands();
     }
 
     public async Task Initialize()
