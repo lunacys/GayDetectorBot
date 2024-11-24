@@ -63,12 +63,12 @@ public class MessageHandlerService : IMessageHandlerService
         if (message == null)
             return;
 
-        _logger.LogInformation(
+        /*_logger.LogInformation(
             $"Handling message '{message.Text}' " +
             $"of type '{message.Type}' " +
             $"in chat '{message.Chat.Id}' " +
             $"from '{message.From?.Username}' ({message.From?.Id})"
-        );
+        );*/
 
         var task = message.Type switch
         {
