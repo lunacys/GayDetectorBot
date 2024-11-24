@@ -63,6 +63,9 @@ public class MessageHandlerService : IMessageHandlerService
         if (message == null)
             return;
 
+        if (message.From?.IsBot ?? true)
+            return;
+
         /*_logger.LogInformation(
             $"Handling message '{message.Text}' " +
             $"of type '{message.Type}' " +
