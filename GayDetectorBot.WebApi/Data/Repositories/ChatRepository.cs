@@ -54,6 +54,8 @@ public class ChatRepository : IChatRepository
             return;
 
         chat.LastGayUsername = username;
+        chat.LastChecked = DateTimeOffset.Now;
+        
         _context.Chats.Update(chat);
         await _context.SaveChangesAsync();
     }
