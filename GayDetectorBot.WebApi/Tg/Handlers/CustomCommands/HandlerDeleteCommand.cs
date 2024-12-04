@@ -6,7 +6,7 @@ namespace GayDetectorBot.WebApi.Tg.Handlers.CustomCommands
 {
     [MessageHandler("удалить-команду", "название-команды")]
     [MessageHandlerMetadata("удалить кастомную команду", CommandCategories.Commands)]
-    [MessageHandlerPermission(MemberStatusPermission.All)]
+    [MessageHandlerPermission(MemberStatusPermission.Creator | MemberStatusPermission.Administrator)]
     public class HandlerDeleteCommand : HandlerBase<string>
     {
         private readonly ICommandMapService _commandMapService;
