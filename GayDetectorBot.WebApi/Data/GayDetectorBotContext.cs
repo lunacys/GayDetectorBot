@@ -1,6 +1,7 @@
 ﻿using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Models.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace GayDetectorBot.WebApi.Data;
 
@@ -31,5 +32,15 @@ public class GayDetectorBotContext : DbContext
         modelBuilder.Entity<Chat>().ToTable("Chat");
         modelBuilder.Entity<SchedulerContext>().ToTable("Schedules");
         modelBuilder.Entity<SavedFile>().ToTable("SavedFile");
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+
+        optionsBuilder.ConfigureWarnings(builder =>
+        {
+            builder.Ignore(RelationalEventId.PendingModelChangesWarning);
+        });
     }
 }

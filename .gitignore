@@ -14,3 +14,5 @@ obj/
 /GayDetectorBot.WebApi/SeedData
 /GayDetectorBot.WebApi/downloads
 /data
+.idea
+db

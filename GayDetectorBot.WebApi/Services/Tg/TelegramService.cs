@@ -49,6 +49,7 @@ public class TelegramService : ITelegramService
         };
 
         _telegramClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions);
+        _logger.LogInformation("Started receiving messages through long polling");
     }
 
     public async Task HandleUpdateFromController(Update update, CancellationToken cancellationToken)
