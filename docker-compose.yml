@@ -13,7 +13,6 @@ services:
       - aspnetcoreapp-network
 
   gaydetectorbot.webapi:
-    image: ${DOCKER_REGISTRY-}gaydetectorbotwebapi
     restart: always
     build:
       context: .
