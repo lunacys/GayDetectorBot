@@ -405,7 +405,7 @@ public class MessageHandlerService : IMessageHandlerService
             CommandCategories.Commands,
             CommandCategories.Gays,
             CommandCategories.Common,
-            // CommandCategories.DickSize // TODO: Add this
+            CommandCategories.DickSize
         };
 
         foreach (var category in categories)

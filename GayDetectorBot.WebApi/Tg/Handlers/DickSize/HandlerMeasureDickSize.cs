@@ -1,8 +1,10 @@
-﻿using Telegram.Bot.Types;
+﻿using System.Security.Cryptography;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace GayDetectorBot.WebApi.Tg.Handlers.DickSize;
 
-[MessageHandler("!член")]
+[MessageHandler("член")]
 [MessageHandlerMetadata("отмерить размер своего полового органа", CommandCategories.DickSize)]
 [MessageHandlerPermission(MemberStatusPermission.All)]
 public class HandlerMeasureDickSize : HandlerBase
@@ -21,11 +23,47 @@ public class HandlerMeasureDickSize : HandlerBase
         "Безделушка", "Базука", "Боеголовка", "Любовный мускул", "Старая кубинская сигара",
     };
 
+    private static readonly string[] _sadEmojis =
+    [
+        "😔", "😞", "🙁", "😒", "😣"
+    ];
+
+    private static readonly string[] _happyEmojis =
+    [
+        "😎", "😏", "😱", "😨", "😯", "😁"
+    ];
+
     private const int MinSize = 1;
-    private const int MaxSize = 50;
+    private const int MaxSize = 30;
+
+    private Random _rnd = new Random();
 
     public override async Task HandleAsync(Message message, params string[] parsedData)
     {
-        throw new NotImplementedException();
+        if (message.From == null)
+        {
+            throw Error("Неизвестный пользователь");
+        }
+
+        var userId = message.From.Id;
+        var measurement = GetDailyMeasurement(userId);
+
+        var randomText = _phrases[_rnd.Next(_phrases.Length)];
+
+        var emoji = measurement >= 17 ? _happyEmojis[_rnd.Next(_happyEmojis.Length)] : _sadEmojis[_rnd.Next(_sadEmojis.Length)];
+
+        await SendTextAsync($"{randomText} у тебя **{measurement} см** {emoji}", message.MessageId, ParseMode.MarkdownV2);
+    }
+
+    private int GetDailyMeasurement(long userId)
+    {
+        var today = DateTime.UtcNow.Date;
+        string seedString = $"{today:yyyy-MM-dd}-{userId}";
+
+        using var sha256 = SHA256.Create();
+        var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(seedString));
+        uint hashValue = BitConverter.ToUInt32(hashBytes, 0);
+        
+        return (int)(hashValue % MaxSize) + MinSize;
     }
 }

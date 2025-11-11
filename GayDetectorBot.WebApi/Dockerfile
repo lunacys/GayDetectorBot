@@ -23,9 +23,9 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./GayDetectorBot.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish -a x64
 
-RUN dotnet tool install --global dotnet-ef --version 9.0
-ENV PATH="$PATH:/root/.dotnet/tools"
-RUN dotnet ef migrations add InitialCreate
+#RUN dotnet tool install --global dotnet-ef --version 9.0
+#ENV PATH="$PATH:/root/.dotnet/tools"
+#RUN dotnet ef migrations add InitialCreate
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
