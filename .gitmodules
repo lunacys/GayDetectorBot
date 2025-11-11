@@ -1,4 +1,0 @@
-[submodule "3rdParty/jint"]
-	path = 3rdParty/jint
-	url = https://github.com/sebastienros/jint.git
-	branch = main
