@@ -12,10 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["3rdParty/jint/Jint/Directory.Build.props", "3rdParty/jint/Jint/"]
-COPY ["3rdParty/jint/NuGet.config", "3rdParty/jint/"]
 COPY ["GayDetectorBot.WebApi/GayDetectorBot.WebApi.csproj", "GayDetectorBot.WebApi/"]
-COPY ["3rdParty/jint/Jint/Jint.csproj", "3rdParty/jint/Jint/"]
 RUN dotnet restore "./GayDetectorBot.WebApi/GayDetectorBot.WebApi.csproj"
 COPY . .
 WORKDIR "/src/GayDetectorBot.WebApi"
