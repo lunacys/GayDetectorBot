@@ -51,8 +51,9 @@ public static class ServiceConfigurator
             var sf = provider.GetRequiredService<ISavedFileContainer>();
             var link = provider.GetRequiredService<ITgUserChatLinkRepository>();
             var uc = provider.GetRequiredService<ITgUserCache>();
+            var cr = provider.GetRequiredService<IChatRepository>();
 
-            return new MessageHandlerService(logger, commandMap, hmc, provider, js, sf, link, uc);
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js, sf, link, uc, cr);
         });
         //services.AddSingleton<ITelegramService, TelegramService>();
         services.AddHttpClient("telegram_bot_client")

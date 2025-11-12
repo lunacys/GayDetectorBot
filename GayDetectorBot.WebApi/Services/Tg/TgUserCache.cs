@@ -18,21 +18,16 @@ public class TgUserCache : ITgUserCache
     private readonly Dictionary<long, TgUser> _users = new();
 
     private readonly ITgUserRepository _userRepository;
-    readonly IChatRepository _chatRepository;
     
-    public TgUserCache(ITgUserRepository userRepository, IChatRepository chatRepository)
+    public TgUserCache(ITgUserRepository userRepository)
     {
         _userRepository = userRepository;
-        _chatRepository = chatRepository;
     }
 
     public async Task NewMessage(Message message)
     {
         if (message.From == null)
             return;
-
-        if (!await _chatRepository.ChatExists(message.Chat.Id))
-            await _chatRepository.ChatAdd(message.Chat.Id, null, null);
         
         if (_users.TryGetValue(message.From.Id, out var user))
         {

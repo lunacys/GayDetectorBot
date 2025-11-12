@@ -8,4 +8,8 @@ public class Chat
     public long ChatId { get; set; }
     public string? LastGayUsername { get; set; }
     public DateTimeOffset? LastChecked { get; set; }
+    
+    public long TotalMessages { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
 }

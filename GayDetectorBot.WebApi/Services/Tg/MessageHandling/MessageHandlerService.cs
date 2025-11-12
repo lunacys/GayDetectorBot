@@ -28,6 +28,7 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly ISavedFileContainer _savedFileContainer;
     private readonly ITgUserChatLinkRepository _userChatLinkRepository;
     private readonly ITgUserCache _userCache;
+    private readonly IChatRepository _chatRepository;
 
     private readonly string _helpMessage;
 
@@ -39,7 +40,8 @@ public class MessageHandlerService : IMessageHandlerService
         IJsEvaluatorService jsEvaluator,
         ISavedFileContainer savedFileContainer,
         ITgUserChatLinkRepository userChatLinkRepository,
-        ITgUserCache userCache)
+        ITgUserCache userCache,
+        IChatRepository chatRepository)
     {
         _logger = logger;
         _commandMap = commandMap;
@@ -48,6 +50,7 @@ public class MessageHandlerService : IMessageHandlerService
         _savedFileContainer = savedFileContainer;
         _userChatLinkRepository = userChatLinkRepository;
         _userCache = userCache;
+        _chatRepository = chatRepository;
 
         _handlerTypes = handlerMetadataContainer.GetHandlerTypes();
 
@@ -82,6 +85,16 @@ public class MessageHandlerService : IMessageHandlerService
             $"in chat '{message.Chat.Id}' " +
             $"from '{message.From?.Username}' ({message.From?.Id})"
         );*/
+
+        if (!await _chatRepository.ChatExists(message.Chat.Id))
+        {
+            await _chatRepository.ChatAdd(message.Chat.Id, null, null);
+        }
+        else
+        {
+            var chat = await _chatRepository.ChatGet(message.Chat.Id);
+            chat!.TotalMessages++;
+        }
         
         await _userCache.NewMessage(message);
         
