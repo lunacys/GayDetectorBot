@@ -3,6 +3,7 @@ using System;
 using GayDetectorBot.WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GayDetectorBot.WebApi.Migrations
 {
     [DbContext(typeof(GayDetectorBotContext))]
-    partial class GayDetectorBotContextModelSnapshot : ModelSnapshot
+    [Migration("20251112025858_ChangeUserStorageFormat")]
+    partial class ChangeUserStorageFormat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,9 +183,6 @@ namespace GayDetectorBot.WebApi.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.ToTable("SavedFile", (string)null);
@@ -231,6 +231,9 @@ namespace GayDetectorBot.WebApi.Migrations
                     b.Property<DateTime?>("LastActivity")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<long?>("LastActivityChatId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("LastActivityMessageId")
                         .HasColumnType("bigint");
 
@@ -241,6 +244,8 @@ namespace GayDetectorBot.WebApi.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("LastActivityChatId");
 
                     b.ToTable("TgUser", (string)null);
                 });
@@ -321,6 +326,15 @@ namespace GayDetectorBot.WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Chat");
+                });
+
+            modelBuilder.Entity("GayDetectorBot.WebApi.Models.Tg.TgUser", b =>
+                {
+                    b.HasOne("GayDetectorBot.WebApi.Models.Tg.Chat", "LastActivityChat")
+                        .WithMany()
+                        .HasForeignKey("LastActivityChatId");
+
+                    b.Navigation("LastActivityChat");
                 });
 
             modelBuilder.Entity("GayDetectorBot.WebApi.Models.Tg.TgUserChatLink", b =>

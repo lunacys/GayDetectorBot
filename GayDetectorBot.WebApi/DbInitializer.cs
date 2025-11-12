@@ -66,7 +66,6 @@ public static class DbInitializer
 
             var chat = new Chat
             {
-                Id = int.Parse(split[0]),
                 ChatId = long.Parse(split[1]),
                 LastGayUsername = split[2],
                 LastChecked = DateTimeOffset.Parse(split[3])

@@ -6,7 +6,7 @@ namespace GayDetectorBot.WebApi.Services.Tg;
 public interface ISavedFileContainer
 {
     Task Initialize();
-    Task Save(SavedFile file);
+    Task Save(SavedFile file, long userId);
 
     Task<IEnumerable<SavedFile>> GetAll(long chatId);
     Task<IEnumerable<SavedFile>> GetAllByType(long chatId, SavedFileType type);
@@ -31,12 +31,14 @@ public class SavedFileContainer : ISavedFileContainer
         return Task.CompletedTask;
     }
 
-    public async Task Save(SavedFile file)
+    public async Task Save(SavedFile file, long userId)
     {
         if (!_savedFiles.ContainsKey(file.ChatId))
         {
             await InitializeFromDb(file.ChatId);
         }
+        
+        file.UserId = userId;
 
         _savedFiles[file.ChatId].Add(file);
         await _savedFileRepository.Save(file);

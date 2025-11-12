@@ -72,7 +72,7 @@ namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
         public override async Task HandleAsync(Message message, params string[] parsedData)
         {
             var chatId = message.Chat.Id;
-
+            
             var lastCheck = await _chatRepository.ChatLastChecked(chatId);
 
             var today = DateTimeOffset.Now;
@@ -116,10 +116,7 @@ namespace GayDetectorBot.WebApi.Tg.Handlers.GayHandling
 
             var p = pList[i];
 
-            if (!lastCheck.HasValue)
-                await _chatRepository.ChatAdd(chatId, DateTimeOffset.Now, p.Username);
-            else
-                await _chatRepository.ChatUpdate(chatId, p.Username);
+            await _chatRepository.ChatAddOrUpdate(chatId, DateTimeOffset.Now, p.Username);
 
             await _gayRepository.AddGay(p);
 

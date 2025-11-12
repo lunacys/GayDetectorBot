@@ -13,6 +13,9 @@ public class SavedFile
     public int Id { get; set; }
     [Required]
     public long ChatId { get; set; }
+    
+    public long? UserId { get; set; }
+    
     [Required] 
     public string FileId { get; set; } = null!;
     [Required]

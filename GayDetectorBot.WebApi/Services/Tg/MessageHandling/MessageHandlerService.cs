@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using GayDetectorBot.WebApi.Data.Repositories;
 using GayDetectorBot.WebApi.Models.Tg;
 using GayDetectorBot.WebApi.Services.Tg.Helpers;
 using GayDetectorBot.WebApi.Tg;
@@ -25,6 +26,8 @@ public class MessageHandlerService : IMessageHandlerService
     private readonly IServiceProvider _serviceProvider;
     private readonly IJsEvaluatorService _jsEvaluator;
     private readonly ISavedFileContainer _savedFileContainer;
+    private readonly ITgUserChatLinkRepository _userChatLinkRepository;
+    private readonly ITgUserCache _userCache;
 
     private readonly string _helpMessage;
 
@@ -34,13 +37,17 @@ public class MessageHandlerService : IMessageHandlerService
         IHandlerMetadataContainer handlerMetadataContainer, 
         IServiceProvider serviceProvider,
         IJsEvaluatorService jsEvaluator,
-        ISavedFileContainer savedFileContainer)
+        ISavedFileContainer savedFileContainer,
+        ITgUserChatLinkRepository userChatLinkRepository,
+        ITgUserCache userCache)
     {
         _logger = logger;
         _commandMap = commandMap;
         _serviceProvider = serviceProvider;
         _jsEvaluator = jsEvaluator;
         _savedFileContainer = savedFileContainer;
+        _userChatLinkRepository = userChatLinkRepository;
+        _userCache = userCache;
 
         _handlerTypes = handlerMetadataContainer.GetHandlerTypes();
 
@@ -63,7 +70,10 @@ public class MessageHandlerService : IMessageHandlerService
         if (message == null)
             return;
 
-        if (message.From?.IsBot ?? true)
+        if (message.From == null)
+            return;
+        
+        if (message.From.IsBot)
             return;
 
         /*_logger.LogInformation(
@@ -72,6 +82,10 @@ public class MessageHandlerService : IMessageHandlerService
             $"in chat '{message.Chat.Id}' " +
             $"from '{message.From?.Username}' ({message.From?.Id})"
         );*/
+        
+        await _userCache.NewMessage(message);
+        
+        await _userChatLinkRepository.AddIfNotExistsUserInChatAsync(message.From.Id, message.Chat.Id);
 
         var task = message.Type switch
         {
@@ -101,7 +115,7 @@ public class MessageHandlerService : IMessageHandlerService
             FileId = pid,
             ChatId = message.Chat.Id,
             Type = SavedFileType.Photo
-        });
+        }, message.From!.Id);
     }
 
     private async Task HandleVideo(Message message)
@@ -116,7 +130,7 @@ public class MessageHandlerService : IMessageHandlerService
             FileId = pid,
             ChatId = message.Chat.Id,
             Type = SavedFileType.Video
-        });
+        }, message.From!.Id);
     }
 
     private async Task HandleDocument(Message message)
@@ -131,7 +145,7 @@ public class MessageHandlerService : IMessageHandlerService
             FileId = pid,
             ChatId = message.Chat.Id,
             Type = SavedFileType.Document
-        });
+        }, message.From!.Id);
     }
 
     private async Task HandleAudio(Message message)
@@ -146,7 +160,7 @@ public class MessageHandlerService : IMessageHandlerService
             FileId = pid,
             ChatId = message.Chat.Id,
             Type = SavedFileType.Audio
-        });
+        }, message.From!.Id);
     }
 
     private async Task HandleSticker(Message message)
@@ -169,7 +183,7 @@ public class MessageHandlerService : IMessageHandlerService
             FileId = pid,
             ChatId = message.Chat.Id,
             Type = SavedFileType.Voice
-        });
+        }, message.From!.Id);
     }
 
     private async Task DownloadFile(string fileId, string basePath, ITelegramBotClient client)

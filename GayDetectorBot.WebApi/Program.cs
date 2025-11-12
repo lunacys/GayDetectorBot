@@ -83,6 +83,10 @@ namespace GayDetectorBot.WebApi
                 // var telegramService = services.GetRequiredService<ITelegramService>();
                 // await telegramService.Initialize();
                 
+                var tgUserCache = services.GetRequiredService<ITgUserCache>();
+                await tgUserCache.InitializeFromDbAsync();
+                logger.LogInformation("TgUser Cache initialized");
+                
                 logger.LogInformation("All services initialized successfully");
             }
             catch (Exception e)

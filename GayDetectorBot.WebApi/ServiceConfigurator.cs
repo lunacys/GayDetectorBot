@@ -19,12 +19,16 @@ public static class ServiceConfigurator
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
 
+        services.AddSingleton<ITgUserRepository, TgUserRepository>();
         services.AddSingleton<IChatRepository, ChatRepository>();
         services.AddSingleton<ICommandRepository, CommandRepository>();
         services.AddSingleton<IGayRepository, GayRepository>();
         services.AddSingleton<IParticipantRepository, ParticipantRepository>();
         services.AddSingleton<IScheduleRepository, ScheduleRepository>();
         services.AddSingleton<ISavedFileRepository, SavedFileRepository>();
+        services.AddSingleton<IPointsRepository, PointsRepository>();
+        services.AddSingleton<ITgUserChatLinkRepository, TgUserChatLinkRepository>();
+        
         services.AddSingleton<ISavedFileContainer, SavedFileContainer>();
 
         services.AddSingleton<ISchedulerService, SchedulerService>();
@@ -32,6 +36,9 @@ public static class ServiceConfigurator
 
         services.AddSingleton<IHandlerMetadataContainer, HandlerMetadataContainer>();
         services.AddSingleton<ICommandMapService, CommandMapService>();
+        
+        services.AddSingleton<ITgUserCache, TgUserCache>();
+        services.AddSingleton<IPointsStorage, PointsStorage>();
 
         AddHandlers(services);
 
@@ -42,8 +49,10 @@ public static class ServiceConfigurator
             var hmc = provider.GetRequiredService<IHandlerMetadataContainer>();
             var js = provider.GetRequiredService<IJsEvaluatorService>();
             var sf = provider.GetRequiredService<ISavedFileContainer>();
+            var link = provider.GetRequiredService<ITgUserChatLinkRepository>();
+            var uc = provider.GetRequiredService<ITgUserCache>();
 
-            return new MessageHandlerService(logger, commandMap, hmc, provider, js, sf);
+            return new MessageHandlerService(logger, commandMap, hmc, provider, js, sf, link, uc);
         });
         //services.AddSingleton<ITelegramService, TelegramService>();
         services.AddHttpClient("telegram_bot_client")

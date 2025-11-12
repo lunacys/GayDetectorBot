@@ -9,7 +9,8 @@ public interface IChatRepository
     Task<DateTimeOffset?> ChatLastChecked(long chatId);
     Task<string?> GetLastGay(long chatId);
     Task ChatUpdate(long chatId, string username);
-    Task ChatAdd(long chatId, DateTimeOffset? dateTime, string lastGayUsername);
+    Task ChatAdd(long chatId, DateTimeOffset? dateTime, string? lastGayUsername);
+    Task ChatAddOrUpdate(long chatId, DateTimeOffset? dateTime, string? lastGayUsername);
 }
 
 public class ChatRepository : IChatRepository
@@ -60,7 +61,7 @@ public class ChatRepository : IChatRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task ChatAdd(long chatId, DateTimeOffset? dateTime, string lastGayUsername)  
+    public async Task ChatAdd(long chatId, DateTimeOffset? dateTime, string? lastGayUsername)  
     {
         await _context.Chats.AddAsync(new Chat
         {
@@ -68,6 +69,30 @@ public class ChatRepository : IChatRepository
             LastChecked = dateTime,
             LastGayUsername = lastGayUsername
         });
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ChatAddOrUpdate(long chatId, DateTimeOffset? dateTime, string? lastGayUsername)
+    {
+        var chat = await _context.Chats.FirstOrDefaultAsync(c => c.ChatId == chatId);
+        if (chat == null)
+        {
+            chat = new Chat
+            {
+                ChatId = chatId,
+                LastChecked = dateTime,
+                LastGayUsername = lastGayUsername
+            };
+            await _context.Chats.AddAsync(chat);
+        }
+        else
+        {
+            chat.LastGayUsername = lastGayUsername;
+            chat.LastChecked = DateTimeOffset.Now;
+            
+            _context.Chats.Update(chat);
+        }
+        
         await _context.SaveChangesAsync();
     }
 }
